@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 """Containes all the classes and constants required to request, refresh and handle the server tokens."""
 
+import requests
 import keyring
 
 class TokenHandler:
 	"""Aquires (requests to the server), saves (safelly) and refreshes a token."""
+
+	# TODO check Giscube OAuth parameters
+	GISCUBE_OAUTH_URL = 'https://www.giscube.org/oauth/'
+	GISCUBE_OAUTH_REFRESH_URL = 'https://www.giscube.org/oauth/refresh/'
+	GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS = 302
 
 	KEYRING_APP_NAME = "giscube-admin-qgis-plugin"
 	KEYRING_TOKEN_KEY = "token"
@@ -39,28 +45,45 @@ class TokenHandler:
 		if !self.hasRefreshToken():
 			return False
 
-		token = refreshToken = None
-		# TODO do the refresh of the token
+		# TODO check POST data
+		response = requests.post(GISCUBE_REFRESH_OAUTH_URL, data={'refresh-token': self.refresh_token})
+		if response == GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
+			return False
+
+		response.raise_for_status()
+		response_object = json.load(response.content)
+
+		token = response_object['token']
+		refreshToken = response_object['refresh-token']
 
 		self.__token = token
 		self.__refreshToken = refreshToken
 		self.__saveTokens()
 
-		# TODO Return True when succeds
-		return False
+		return True
 
 
 
 	def requestNewToken(self, user, password):
-		"""Requests a new token to the server."""
+		"""Requests a new token to the server. Returns if succeded."""
 
-		token = refreshToken = None
+		# TODO check POST data
+		response = requests.post(GISCUBE_OAUTH_URL, data={'user': user, 'password': password})
+		if response == GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
+			return False
+		response.raise_for_status()
+		response_object = json.load(response.content)
 
-		# TODO make the actual request
+		token = response_object['token']
+		refreshToken = None
+		if 'refresh-token' in response_object:
+			refreshToken = response_object['refresh-token']
 
 		self.__token = token
 		self.__refreshToken = refreshToken
 		self.__saveTokens()
+
+		return True
 
 
 
