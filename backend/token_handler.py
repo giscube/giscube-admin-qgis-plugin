@@ -1,8 +1,14 @@
 #!/usr/bin/env python
 """Containes all the classes and constants required to request, refresh and handle the server tokens."""
 
+import keyring
+
 class TokenHandler:
 	"""Aquires (requests to the server), saves (safelly) and refreshes a token."""
+
+	KEYRING_APP_NAME = "giscube-admin-qgis-plugin"
+	KEYRING_TOKEN_KEY = "token"
+	KEYRING_REFRESH_TOKEN_KEY = "refresh-token"
 
 	def __init__(self):
 		"""Contructor. Loads the saved tokens."""
@@ -60,15 +66,17 @@ class TokenHandler:
 
 	def __loadTokens(self):
 		"""Saves the tokens in a safe place."""
-		token = refreshToken = None
-
-		# TODO Load tokens from vault
-		return token, refreshToken
+		self.token         = keyring.get_password(KEYRING_APP_NAME, KEYRING_TOKEN_KEY)
+		self.refresh_token = keyring.get_password(KEYRING_APP_NAME, KEYRING_REFRESH_TOKEN_KEY)
 
 
 
 	def __saveTokens(self):
 		"""Saves the tokens in a safe place."""
-		# TODO Remove old saved tokens
-		# TODO Save new tokens
-		pass
+		keyring.delete_password(KEYRING_APP_NAME, KEYRING_TOKEN_KEY)
+		keyring.delete_password(KEYRING_APP_NAME, KEYRING_REFRESH_TOKEN_KEY)
+
+		if self.token is not None:
+			keyring.set_password(KEYRING_APP_NAME, KEYRING_TOKEN_KEY,         self.token)
+		if self.refresh_token is not None:
+			keyring.set_password(KEYRING_APP_NAME, KEYRING_REFRESH_TOKEN_KEY, self.refresh_token)
