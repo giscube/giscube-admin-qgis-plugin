@@ -20,4 +20,4 @@ class GiscubeAdminConfigureDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # Set up the user interface from Designer.
         self.setupUi(self)
-        self.url = url
+        self.url.setText(url)
