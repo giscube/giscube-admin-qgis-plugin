@@ -11,6 +11,7 @@ from .resources import *
 
 # Import the code for the DockWidget
 from .giscube_admin_dockwidget import GiscubeAdminDockWidget
+from .giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
 import os.path
 
 
@@ -224,4 +225,6 @@ class GiscubeAdmin:
 
     def configure(self):
             """Configure method that makes a popup to configure the plugin"""
-            pass # TODO
+            dialog = GiscubeAdminConfigureDialog('https://giscube.com/')
+            if dialog.exec_():
+                pass # TODO apply changes
