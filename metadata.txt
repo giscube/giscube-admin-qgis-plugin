@@ -1,18 +1,11 @@
-# This file contains metadata for your plugin. Since 
-# version 2.0 of QGIS this is the proper way to supply 
-# information about a plugin. The old method of 
-# embedding metadata in __init__.py will 
-# is no longer supported since version 2.0.
-
-# This file should be included when you package your plugin.# Mandatory items:
-
+# Mandatory items:
 [general]
 name=Giscube Admin
 qgisMinimumVersion=3.0
 description=A graphical Giscube administration tool
 version=0.1
-author=Martí Angelats i Ribera
-email=marti.angelats@gmail.com
+author=Microdisseny Giscube SLU
+email=info@microdisseny.com
 
 about=This plugins allows the user to easily work with a Giscube server from QGIS 3.
 
@@ -36,4 +29,3 @@ experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
-
