@@ -37,13 +37,16 @@ class GiscubeAdminDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(GiscubeAdminDockWidget, self).__init__(parent)
+
         # Set up the user interface from Designer.
-        # After setupUI you can access any designer object by doing
-        # self.<objectname>, and you can use autoconnect slots - see
-        # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
-        # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+
+        # Add signals and slots connections
+        self.loginSubmit.clicked.connect(self.__login)
 
     def closeEvent(self, event):
         self.closingPlugin.emit()
         event.accept()
+
+    def __login(self):
+        pass # TODO actual login

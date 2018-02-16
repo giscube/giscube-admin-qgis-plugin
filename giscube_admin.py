@@ -65,8 +65,7 @@ class GiscubeAdmin:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&Giscube Admin')
-        # TODO: We are going to let the user set this up in a future iteration
-        self.toolbar = self.iface.addToolBar(u'GiscubeAdmin')
+        self.toolbar = self.iface.pluginToolBar()
         self.toolbar.setObjectName(u'GiscubeAdmin')
 
         #print "** INITIALIZING GiscubeAdmin"
@@ -171,9 +170,16 @@ class GiscubeAdmin:
         icon_path = ':/plugins/GiscubeAdmin/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'Open Giscube admin'),
+            text=self.tr(u'Open Giscube Admin'),
             callback=self.run,
             parent=self.iface.mainWindow())
+
+        self.add_action(
+            icon_path,
+            text=self.tr(u'Configure Giscube Admin'),
+            callback=self.configure,
+            parent=self.iface.mainWindow(),
+            add_to_toolbar=False)
 
     #--------------------------------------------------------------------------
 
@@ -228,6 +234,11 @@ class GiscubeAdmin:
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
 
             # show the dockwidget
-            # TODO: fix to allow choice of dock location
             self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
+
+    #--------------------------------------------------------------------------
+
+    def configure(self):
+            """Configure method that makes a popup to configure the plugin"""
+            pass # TODO
