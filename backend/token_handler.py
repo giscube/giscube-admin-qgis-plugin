@@ -65,7 +65,11 @@ class TokenHandler:
 
 
 	def requestNewToken(self, user, password):
-		"""Requests a new token to the server. Returns if succeded."""
+		"""
+		Requests a new token to the server. Returns if succeded.
+		It will raise a requests.exceptions.HTTPError if the server responses with
+		an error status code.
+		"""
 
 		# TODO check POST data
 		response = requests.post(GISCUBE_OAUTH_URL, data={'user': user, 'password': password})
