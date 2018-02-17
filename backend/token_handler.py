@@ -74,7 +74,11 @@ class TokenHandler:
 		response.raise_for_status()
 		response_object = json.load(response.content)
 
-		token = response_object['token']
+		if 'token' in response_object:
+			token = response_object['token']
+		else:
+			return False
+
 		refreshToken = None
 		if 'refresh-token' in response_object:
 			refreshToken = response_object['refresh-token']
