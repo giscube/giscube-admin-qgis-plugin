@@ -32,6 +32,14 @@ class GiscubeAdmin:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
 
+        # initialize settings (with defaults)
+        self.settings = QSettings(
+            'Microdisseny Giscube SLU',
+            'giscube-admin-qgis-plugin')
+
+        if not self.settings.contains('config/url'):
+            self.settings.setValue('config/url', 'https://giscube.com/')
+
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
@@ -225,6 +233,10 @@ class GiscubeAdmin:
 
     def configure(self):
             """Configure method that makes a popup to configure the plugin"""
-            dialog = GiscubeAdminConfigureDialog('https://giscube.com/')
+            # make and execute dialog
+            dialog = GiscubeAdminConfigureDialog(
+                self.settings.value('config/url'))
+
             if dialog.exec_():
-                pass # TODO apply changes
+                # Save the new settings (if the user clicks to save)
+                self.settings.setValue('config/url', dialog.url.text())
