@@ -3,7 +3,7 @@
 
 
 class BadCredentials(ConnectionError):
-	"""The credetials or the token used are wrong or have expired."""
+	"""The credentials or the token used are wrong or have expired."""
 	pass
 
 # TODO do all the https requests
@@ -22,5 +22,5 @@ class GiscubeRequests:
 		return path
 
 	def pushProject(self, path, project_name):
-		"""Saves the project in path to the server with project_name overriding if exists."""
+		"""Saves the project in a path to the server with project_name overriding it if exists."""
 		pass

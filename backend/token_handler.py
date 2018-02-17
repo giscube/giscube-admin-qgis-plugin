@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Containes all the classes and constants required to request, refresh and handle the server tokens."""
+"""Contains all the classes and constants required to request, refresh and handle the server tokens."""
 
 import requests
 import keyring
 
 class TokenHandler:
-	"""Aquires (requests to the server), saves (safelly) and refreshes a token."""
+	"""Acquires (requests to the server), saves (safely) and refreshes a token."""
 
 	# TODO check Giscube OAuth parameters
 	GISCUBE_OAUTH_URL = 'https://www.giscube.org/oauth/'
@@ -42,7 +42,7 @@ class TokenHandler:
 
 	def refreshToken(self):
 		"""Refreshes the token with the refresh token. Returns if it succeded."""
-		if !self.hasRefreshToken():
+		if not self.hasRefreshToken():
 			return False
 
 		# TODO check POST data
@@ -88,7 +88,7 @@ class TokenHandler:
 
 
 	def __loadTokens(self):
-		"""Saves the tokens in a safe place."""
+		"""Loads the tokens in a safe place."""
 		self.token         = keyring.get_password(KEYRING_APP_NAME, KEYRING_TOKEN_KEY)
 		self.refresh_token = keyring.get_password(KEYRING_APP_NAME, KEYRING_REFRESH_TOKEN_KEY)
 
