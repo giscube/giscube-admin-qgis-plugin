@@ -60,11 +60,8 @@ class GiscubeAdmin:
         self.toolbar = self.iface.pluginToolBar()
         self.toolbar.setObjectName(u'GiscubeAdmin')
 
-        #print "** INITIALIZING GiscubeAdmin"
-
         self.pluginIsActive = False
         self.dockwidget = None
-
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -81,18 +78,17 @@ class GiscubeAdmin:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('GiscubeAdmin', message)
 
-
     def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+            self,
+            icon_path,
+            text,
+            callback,
+            enabled_flag=True,
+            add_to_menu=True,
+            add_to_toolbar=True,
+            status_tip=None,
+            whats_this=None,
+            parent=None):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -155,7 +151,6 @@ class GiscubeAdmin:
 
         return action
 
-
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
@@ -173,12 +168,8 @@ class GiscubeAdmin:
             parent=self.iface.mainWindow(),
             add_to_toolbar=False)
 
-    #--------------------------------------------------------------------------
-
     def onClosePlugin(self):
         """Cleanup necessary items here when plugin dockwidget is closed"""
-
-        #print "** CLOSING GiscubeAdmin"
 
         # disconnects
         self.dockwidget.closingPlugin.disconnect(self.onClosePlugin)
@@ -191,11 +182,8 @@ class GiscubeAdmin:
 
         self.pluginIsActive = False
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
-
-        #print "** UNLOAD GiscubeAdmin"
 
         for action in self.actions:
             self.iface.removePluginMenu(
@@ -205,20 +193,16 @@ class GiscubeAdmin:
         # remove the toolbar
         del self.toolbar
 
-    #--------------------------------------------------------------------------
-
     def run(self):
         """Run method that loads and starts the plugin"""
 
         if not self.pluginIsActive:
             self.pluginIsActive = True
 
-            #print "** STARTING GiscubeAdmin"
-
             # dockwidget may not exist if:
             #    first run of plugin
             #    removed on close (see self.onClosePlugin method)
-            if self.dockwidget == None:
+            if self.dockwidget is None:
                 # Create the dockwidget (after translation) and keep reference
                 self.dockwidget = GiscubeAdminDockWidget()
 
@@ -228,8 +212,6 @@ class GiscubeAdmin:
             # show the dockwidget
             self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
-
-    #--------------------------------------------------------------------------
 
     def configure(self):
             """Configure method that makes a popup to configure the plugin"""

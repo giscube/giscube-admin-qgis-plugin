@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-This script contains GiscubeAdminDockWidget: the class of the lateral dock that opens with the plugin.
+This script contains GiscubeAdminDockWidget: the class of the lateral dock that
+opens with the plugin.
 """
 
 import os
 
-from PyQt5 import QtGui, QtWidgets, uic
+from PyQt5 import QtWidgets, uic
 from PyQt5.QtCore import pyqtSignal
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -31,4 +32,4 @@ class GiscubeAdminDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         event.accept()
 
     def __login(self):
-        pass # TODO actual login
+        pass  # TODO actual login

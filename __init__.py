@@ -3,6 +3,7 @@
 This script initializes the plugin, making it known to QGIS.
 """
 
+
 # noinspection PyPep8Naming
 def classFactory(iface):  # pylint: disable=invalid-name
     """Load GiscubeAdmin class from file GiscubeAdmin.
