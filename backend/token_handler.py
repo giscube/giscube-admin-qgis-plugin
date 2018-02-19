@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-"""Contains all the classes and constants required to request, refresh and handle the server tokens."""
+"""
+Contains all the classes and constants required to request, refresh and handle
+the server tokens.
+"""
 
 from urllib.parse import urljoin
 
@@ -7,7 +10,9 @@ import requests
 import keyring
 
 class TokenHandler:
-	"""Acquires (requests to the server), saves (safely) and refreshes a token."""
+	"""
+	Acquires (requests to the server), saves (safely) and refreshes a token.
+	"""
 
 	# TODO check Giscube OAuth parameters
 	GISCUBE_OAUTH_PATH = 'oauth/'
@@ -19,32 +24,42 @@ class TokenHandler:
 	KEYRING_REFRESH_TOKEN_KEY = "refresh-token"
 
 	def __init__(self, server_url):
-		"""Contructor. Loads the saved tokens."""
+		"""
+		Contructor. Loads the saved tokens.
+		"""
 		self.__loadTokens()
 		self.server_url = server_url
 
 
 	@property
 	def token(self):
-		"""Get the current token."""
+		"""
+		Get the current token.
+		"""
 		return self.__token
 
 
 
 	def hasToken():
-		"""Does it have a token?"""
+		"""
+		Does it have a token?
+		"""
 		return self.__token != None
 
 
 
 	def hasRefreshToken(self):
-		"""Does it have a refresh token?"""
+		"""
+		Does it have a refresh token?
+		"""
 		return self.__refreshToken != None
 
 
 
 	def refreshToken(self):
-		"""Refreshes the token with the refresh token. Returns if it succeded."""
+		"""
+		Refreshes the token with the refresh token. Returns if it succeded.
+		"""
 		if not self.hasRefreshToken():
 			return False
 
@@ -72,8 +87,8 @@ class TokenHandler:
 	def requestNewToken(self, user, password):
 		"""
 		Requests a new token to the server. Returns if succeded.
-		It will raise a requests.exceptions.HTTPError if the server responses with
-		an error status code.
+		It will raise a requests.exceptions.HTTPError if the server responses
+		with an error status code.
 		"""
 
 		# TODO check POST data
@@ -103,18 +118,30 @@ class TokenHandler:
 
 
 	def __loadTokens(self):
-		"""Loads the tokens in a safe place."""
-		self.token         = keyring.get_password(KEYRING_APP_NAME, KEYRING_TOKEN_KEY)
-		self.refresh_token = keyring.get_password(KEYRING_APP_NAME, KEYRING_REFRESH_TOKEN_KEY)
+		"""
+		Loads the tokens in a safe place.
+		"""
+		self.token = keyring.get_password(KEYRING_APP_NAME, KEYRING_TOKEN_KEY)
+		self.refresh_token = keyring.get_password(
+			KEYRING_APP_NAME,
+			KEYRING_REFRESH_TOKEN_KEY)
 
 
 
 	def __saveTokens(self):
-		"""Saves the tokens in a safe place."""
+		"""
+		Saves the tokens in a safe place.
+		"""
 		keyring.delete_password(KEYRING_APP_NAME, KEYRING_TOKEN_KEY)
 		keyring.delete_password(KEYRING_APP_NAME, KEYRING_REFRESH_TOKEN_KEY)
 
 		if self.token is not None:
-			keyring.set_password(KEYRING_APP_NAME, KEYRING_TOKEN_KEY,         self.token)
+			keyring.set_password(
+				KEYRING_APP_NAME,
+				KEYRING_TOKEN_KEY,
+				self.token)
 		if self.refresh_token is not None:
-			keyring.set_password(KEYRING_APP_NAME, KEYRING_REFRESH_TOKEN_KEY, self.refresh_token)
+			keyring.set_password(
+				KEYRING_APP_NAME,
+				KEYRING_REFRESH_TOKEN_KEY,
+				self.refresh_token)
