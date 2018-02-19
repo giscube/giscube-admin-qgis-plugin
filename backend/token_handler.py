@@ -28,8 +28,14 @@ class TokenHandler:
 		Contructor. Loads the saved tokens.
 		"""
 		self.__loadTokens()
-		self.server_url = server_url
+		self._server_url = server_url
 
+	@property
+	def server_url(self):
+		"""
+		Gets the URL of the credentials of the server.
+		"""
+		return self._server_url
 
 	@property
 	def token(self):
@@ -65,7 +71,7 @@ class TokenHandler:
 
 		# TODO check POST data
 		response = requests.post(
-			urljoin(self.server_url, GISCUBE_REFRESH_OAUTH_PATH),
+			urljoin(self._server_url, GISCUBE_REFRESH_OAUTH_PATH),
 			data={'refresh-token': self.refresh_token})
 		if response == GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
 			return False
@@ -93,7 +99,7 @@ class TokenHandler:
 
 		# TODO check POST data
 		response = requests.post(
-			urljoin(self.server_url, GISCUBE_OAUTH_PATH),
+			urljoin(self._server_url, GISCUBE_OAUTH_PATH),
 			data={'user': user, 'password': password})
 		if response == GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
 			return False
