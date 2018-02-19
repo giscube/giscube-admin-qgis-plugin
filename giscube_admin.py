@@ -1,25 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-/***************************************************************************
- GiscubeAdmin
-                                 A QGIS plugin
- A graphical Giscube administration tool
-                              -------------------
-        begin                : 2018-02-15
-        git sha              : $Format:%H$
-        copyright            : (C) 2018 by Martí Angelats i Ribera
-        email                : marti.angelats@gmail.com
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+This script contains GiscubeAdmin: the plugin's main class.
 """
+
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
@@ -28,6 +11,7 @@ from .resources import *
 
 # Import the code for the DockWidget
 from .giscube_admin_dockwidget import GiscubeAdminDockWidget
+from .giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
 import os.path
 
 
@@ -48,6 +32,14 @@ class GiscubeAdmin:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
 
+        # initialize settings (with defaults)
+        self.settings = QSettings(
+            'Microdisseny Giscube SLU',
+            'giscube-admin-qgis-plugin')
+
+        if not self.settings.contains('config/url'):
+            self.settings.setValue('config/url', 'https://giscube.com/')
+
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
@@ -65,8 +57,7 @@ class GiscubeAdmin:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&Giscube Admin')
-        # TODO: We are going to let the user set this up in a future iteration
-        self.toolbar = self.iface.addToolBar(u'GiscubeAdmin')
+        self.toolbar = self.iface.pluginToolBar()
         self.toolbar.setObjectName(u'GiscubeAdmin')
 
         #print "** INITIALIZING GiscubeAdmin"
@@ -171,9 +162,16 @@ class GiscubeAdmin:
         icon_path = ':/plugins/GiscubeAdmin/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'Open Giscube admin'),
+            text=self.tr(u'Open Giscube Admin'),
             callback=self.run,
             parent=self.iface.mainWindow())
+
+        self.add_action(
+            icon_path,
+            text=self.tr(u'Configure Giscube Admin'),
+            callback=self.configure,
+            parent=self.iface.mainWindow(),
+            add_to_toolbar=False)
 
     #--------------------------------------------------------------------------
 
@@ -228,6 +226,17 @@ class GiscubeAdmin:
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
 
             # show the dockwidget
-            # TODO: fix to allow choice of dock location
             self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
+
+    #--------------------------------------------------------------------------
+
+    def configure(self):
+            """Configure method that makes a popup to configure the plugin"""
+            # make and execute dialog
+            dialog = GiscubeAdminConfigureDialog(
+                self.settings.value('config/url'))
+
+            if dialog.exec_():
+                # Save the new settings (if the user clicks to save)
+                self.settings.setValue('config/url', dialog.url.text())
