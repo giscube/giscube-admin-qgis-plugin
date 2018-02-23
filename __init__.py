@@ -7,8 +7,10 @@ plugin, making it known to QGIS.
 from os import path
 from importlib import import_module
 
+# List of dependencies
 DEPENDENCIES = []
 
+# Import pip. If it is not installed, install it
 try:
     import pip
 except:
@@ -19,12 +21,18 @@ except:
 
 
 def install_dependency(name):
+    """Test that a dependency can be loaded. If not, it installs it.
+
+    :param name: Name of the dependent module to check and install
+    :type name: str or unicode
+    """
     try:
         import_module(name)
     except:
-        pip.main(['install', '--upgrade', name])
+        pip.main(['install', name])
 
 
+# Install all dependencies
 for name in DEPENDENCIES:
     install_dependency(name)
 
