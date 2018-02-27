@@ -15,15 +15,14 @@ class TokenHandler:
     """
     Acquires (requests to the server), saves (safely) and refreshes a token.
     """
+    CLIENT_ID = ''  # TODO: add client ID
 
-    # TODO check Giscube OAuth parameters
-    GISCUBE_OAUTH_PATH = 'oauth/'
-    GISCUBE_OAUTH_REFRESH_PATH = 'oauth/refresh/'
-    GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS = 302
+    GISCUBE_OAUTH_PATH = 'o/token/'
+    GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS = 401
 
     KEYRING_APP_NAME = "giscube-admin-qgis-plugin"
-    KEYRING_TOKEN_KEY = "token"
-    KEYRING_REFRESH_TOKEN_KEY = "refresh-token"
+    KEYRING_TOKEN_KEY = "access_token"
+    KEYRING_REFRESH_TOKEN_KEY = "refresh_token"
 
     def __init__(self, server_url):
         """
@@ -65,18 +64,23 @@ class TokenHandler:
         if not self.hasRefreshToken():
             return False
 
-        # TODO check POST data
         response = requests.post(
-            urljoin(self._server_url, self.GISCUBE_OAUTH_REFRESH_PATH),
-            data={'refresh-token': self.refresh_token})
+            urljoin(self._server_url, self.GISCUBE_OAUTH_PATH),
+            data={
+                'refresh-token': self.refresh_token,
+                'grant_type': 'refresh_token',
+                'client_id': self.CLIENT_ID,
+            }
+        )
+
         if response == self.GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
             return False
 
         response.raise_for_status()
         response_object = json.load(response.content)
 
-        token = response_object['token']
-        refreshToken = response_object['refresh-token']
+        token = response_object['access_token']
+        refreshToken = response_object['refresh_token']
 
         self.__token = token
         self.__refreshToken = refreshToken
@@ -91,17 +95,23 @@ class TokenHandler:
         with an error status code.
         """
 
-        # TODO check POST data
         response = requests.post(
             urljoin(self._server_url, self.GISCUBE_OAUTH_PATH),
-            data={'user': user, 'password': password})
+            data={
+                'user': user,
+                'password': password,
+                'grant_type': 'password',
+                'client_id': self.CLIENT_ID,
+            }
+        )
+
         if response == self.GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
             return False
         response.raise_for_status()
         response_object = json.load(response.content)
 
-        if 'token' in response_object:
-            token = response_object['token']
+        if 'access_token' in response_object:
+            token = response_object['access_token']
         else:
             return False
 
