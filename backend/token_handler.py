@@ -15,7 +15,6 @@ class TokenHandler:
     """
     Acquires (requests to the server), saves (safely) and refreshes a token.
     """
-    CLIENT_ID = ''  # TODO: add client ID
 
     GISCUBE_OAUTH_PATH = 'o/token/'
     GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS = 401
@@ -24,12 +23,20 @@ class TokenHandler:
     KEYRING_TOKEN_KEY = "access_token"
     KEYRING_REFRESH_TOKEN_KEY = "refresh_token"
 
-    def __init__(self, server_url):
+    def __init__(self, server_url, client_id):
         """
         Contructor. Loads the saved tokens.
         """
         self.__loadTokens()
         self._server_url = server_url
+        self._cliet_id = client_id
+
+    @property
+    def client_id(self):
+        """
+        Gets the client ID for this server.
+        """
+        return self._server_url
 
     @property
     def server_url(self):
