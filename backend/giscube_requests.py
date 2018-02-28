@@ -64,7 +64,7 @@ class GiscubeRequests:
 
         path = QDir.tempPath() + '/qgis-admin-project-'+project_id+'.qgs'
         with open(path, 'w') as f:
-            if 'data' in response:  # TODO: add type checking
+            if 'data' in response:
                 f.write(response['data'])
 
         return path
@@ -121,7 +121,6 @@ class GiscubeRequests:
             if response.status_code == Api.BAD_CREDENTIALS:
                 raise BadCredentials()
 
-        # TODO? Check for status 404?
         response.raise_for_status()
 
         if process_result:
