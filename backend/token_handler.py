@@ -24,10 +24,19 @@ class TokenHandler:
     KEYRING_TOKEN_KEY = "access_token"
     KEYRING_REFRESH_TOKEN_KEY = "refresh_token"
 
-    def __init__(self, server_url, client_id):
+    def __init__(self, server_url, client_id, save_tokens=True):
         """
-        Contructor. Loads the saved tokens.
+        Contructor. Loads, if enabled, the saved tokens.
+        :param server_url: Used server service URL
+        :type server_url: str
+        :param client_id: Application Oauth client ID
+        :type client_id: str or unicode
+        :param save_tokens: Enables saving the tokens locally (using the OS
+        "safe" system)
+        :type save_tokens: bool
         """
+        self._save = save_tokens
+
         self._keyring_client_name = self.KEYRING_APP_NAME+'@'+client_id
         self._server_url = server_url
         self._client_id = client_id
@@ -69,39 +78,7 @@ class TokenHandler:
         """
         return self.__refresh_token is not None
 
-    @property
-    def refresh_token(self):
-        """
-        Refreshes the token with the refresh token. Returns if it succeded.
-        """
-        if not self.has_refresh_token:
-            return False
-
-        response = requests.post(
-            urljoin(self._server_url, self.GISCUBE_OAUTH_PATH),
-            data={
-                'refresh-token': self.refresh_token,
-                'grant_type': 'refresh_token',
-                'client_id': self.CLIENT_ID,
-            }
-        )
-
-        if response == self.GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
-            return False
-
-        response.raise_for_status()
-        response_object = json.load(response.content)
-
-        token = response_object['access_token']
-        refresh_token = response_object['refresh_token']
-
-        self.__token = token
-        self.__refresh_token = refresh_token
-        self.__saveTokens()
-
-        return True
-
-    def request_new_token(self, user, password):
+    def login(self, user, password):
         """
         Requests a new token to the server. Returns if succeded.
         :param user: User's username
@@ -140,10 +117,44 @@ class TokenHandler:
 
         return True
 
+    def refresh_token(self):
+        """
+        Refreshes the token with the refresh token. Returns if it succeded.
+        """
+        if not self.has_refresh_token:
+            return False
+
+        response = requests.post(
+            urljoin(self._server_url, self.GISCUBE_OAUTH_PATH),
+            data={
+                'refresh-token': self.refresh_token,
+                'grant_type': 'refresh_token',
+                'client_id': self.CLIENT_ID,
+            }
+        )
+
+        if response == self.GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
+            return False
+
+        response.raise_for_status()
+        response_object = json.load(response.content)
+
+        token = response_object['access_token']
+        refresh_token = response_object['refresh_token']
+
+        self.__token = token
+        self.__refresh_token = refresh_token
+        self.__saveTokens()
+
+        return True
+
     def __load_tokens(self):
         """
         Loads the tokens in a safe place.
         """
+        if not self._save:
+            return
+
         self.__access_token = keyring.get_password(
             self._keyring_client_name,
             self.KEYRING_TOKEN_KEY)
@@ -155,6 +166,9 @@ class TokenHandler:
         """
         Saves the tokens in a safe place.
         """
+        if not self._save:
+            return
+
         keyring.delete_password(
             self._keyring_client_name,
             self.KEYRING_TOKEN_KEY)
