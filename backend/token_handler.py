@@ -24,7 +24,12 @@ class TokenHandler:
     KEYRING_TOKEN_KEY = "access_token"
     KEYRING_REFRESH_TOKEN_KEY = "refresh_token"
 
-    def __init__(self, server_url, client_id, save_tokens=True):
+    def __init__(
+            self,
+            server_url,
+            client_id,
+            save_tokens=True,
+            keyring_name=None):
         """
         Contructor. Loads, if enabled, the saved tokens.
         :param server_url: Used server service URL
@@ -35,11 +40,15 @@ class TokenHandler:
         "safe" system)
         :type save_tokens: bool
         """
-        self._save = save_tokens
 
-        self._keyring_client_name = self.KEYRING_APP_NAME+'@'+client_id
         self._server_url = server_url
         self._client_id = client_id
+
+        self._save = save_tokens
+        if keyring_name is not None:
+            self._keyring_client_name = keyring_name
+        else:
+            self._keyring_client_name = self.KEYRING_APP_NAME
 
         self.__loadTokens()
 
