@@ -101,12 +101,12 @@ class TokenHandler:
     def request_new_token(self, user, password):
         """
         Requests a new token to the server. Returns if succeded.
-        It will raise a requests.exceptions.HTTPError if the server responses
-        with an error status code.
         :param user: User's username
         :type user: str or unicode
         :param password: User's password
         :type password: str or unicode
+        :raises requests.exceptions.HTTPError: when the server responses with
+        an unexpected error status code
         """
 
         response = requests.post(
