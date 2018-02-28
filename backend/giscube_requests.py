@@ -7,7 +7,8 @@ Giscube server.
 from PyQt5.QtCore import QDir
 import requests
 
-from utils import urljoin
+from .constants import GiscubeApi as Api
+from .utils import urljoin
 
 
 class BadCredentials(ConnectionError):
@@ -17,13 +18,18 @@ class BadCredentials(ConnectionError):
     pass
 
 
+class ExpiredToken(ConnectionError):
+    """
+    The token has expired.
+    """
+    pass
+
+
 class GiscubeRequests:
     """
     Handles all the requests to the Giscube server. May return a BadCredentials
     error.
     """
-    API_PATH = 'api/v1'
-    API_PROJECTS = 'projects'
 
     def __init__(self, token_handler):
         self.__token_handler = token_handler
@@ -37,8 +43,8 @@ class GiscubeRequests:
         response = requests.get(
             urljoin(
                 self.__token_handler.server_url,
-                self.API_PATH,
-                self.API_PROJECTS),
+                Api.PATH,
+                Api.PROJECTS),
             params={
                 'client_id': self.__token_handler.client_id,
                 'access_token': self.__token_handler.access_token,
@@ -66,8 +72,8 @@ class GiscubeRequests:
         response = requests.get(
             urljoin(
                 self.__token_handler.server_url,
-                self.API_PATH,
-                self.API_PROJECTS,
+                Api.PATH,
+                Api.PROJECTS,
                 project_id),
             params={
                 'client_id': self.__token_handler.client_id,
@@ -107,14 +113,14 @@ class GiscubeRequests:
             request = requests.post
             url = urljoin(
                 self.__token_handler.server_url,
-                self.API_PATH,
-                self.API_PROJECTS)
+                Api.PATH,
+                Api.PROJECTS)
         else:
             request = requests.put
             url = urljoin(
                 self.__token_handler.server_url,
-                self.API_PATH,
-                self.API_PROJECTS,
+                Api.PATH,
+                Api.PROJECTS,
                 project_id)
 
         response = request(

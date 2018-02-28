@@ -9,6 +9,7 @@ import json
 import requests
 import keyring
 
+from .constants import Oauth, Vault
 from .utils import urljoin
 
 
@@ -16,13 +17,7 @@ class TokenHandler:
     """
     Acquires (requests to the server), saves (safely) and refreshes a token.
     """
-
-    GISCUBE_OAUTH_PATH = 'o/token'
-    GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS = 401
-
     KEYRING_APP_NAME = "giscube-admin-qgis-plugin"
-    KEYRING_TOKEN_KEY = "access_token"
-    KEYRING_REFRESH_TOKEN_KEY = "refresh_token"
 
     def __init__(
             self,
@@ -47,7 +42,7 @@ class TokenHandler:
         if keyring_name is not None:
             self._keyring_client_name = keyring_name
         else:
-            self._keyring_client_name = self.KEYRING_APP_NAME
+            self._keyring_client_name = self._keyring_client_name
 
         self.__load_tokens()
 
@@ -98,7 +93,7 @@ class TokenHandler:
         """
 
         response = requests.post(
-            urljoin(self._server_url, self.GISCUBE_OAUTH_PATH),
+            urljoin(self._server_url, Oauth.PATH),
             data={
                 'user': user,
                 'password': password,
@@ -107,7 +102,7 @@ class TokenHandler:
             }
         )
 
-        if response == self.GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
+        if response == Oauth.BAD_CREDENTIALS_STATUS:
             return False
         response.raise_for_status()
         response_object = json.load(response.content)
@@ -133,7 +128,7 @@ class TokenHandler:
             return False
 
         response = requests.post(
-            urljoin(self._server_url, self.GISCUBE_OAUTH_PATH),
+            urljoin(self._server_url, Oauth.PATH),
             data={
                 'refresh-token': self.refresh_token,
                 'grant_type': 'refresh_token',
@@ -141,7 +136,7 @@ class TokenHandler:
             }
         )
 
-        if response == self.GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS:
+        if response == Oauth.BAD_CREDENTIALS_STATUS:
             return False
 
         response.raise_for_status()
@@ -165,10 +160,10 @@ class TokenHandler:
 
         self.__access_token = keyring.get_password(
             self._keyring_client_name,
-            self.KEYRING_TOKEN_KEY)
+            Vault.ACCESS_TOKEN_KEY)
         self.__refresh_token = keyring.get_password(
-            self.KEYRING_APP_NAME,
-            self.KEYRING_REFRESH_TOKEN_KEY)
+            self._keyring_client_name,
+            Vault.REFRESH_TOKEN_KEY)
 
     def __save_tokens(self):
         """
@@ -179,20 +174,20 @@ class TokenHandler:
 
         keyring.delete_password(
             self._keyring_client_name,
-            self.KEYRING_TOKEN_KEY)
+            Vault.ACCESS_TOKEN_KEY)
         keyring.delete_password(
             self._keyring_client_name,
-            self.KEYRING_REFRESH_TOKEN_KEY)
+            Vault.REFRESH_TOKEN_KEY)
 
         if self.token is not None:
             keyring.set_password(
                 self._keyring_client_name,
-                self.KEYRING_TOKEN_KEY,
+                Vault.ACCESS_TOKEN_KEY,
                 self.__access_token)
         if self.refresh_token is not None:
             keyring.set_password(
                 self._keyring_client_name,
-                self.KEYRING_REFRESH_TOKEN_KEY,
+                Vault.REFRESH_TOKEN_KEY,
                 self.__refresh_token)
 
     def delete_saved(self):
@@ -201,7 +196,7 @@ class TokenHandler:
         """
         keyring.delete_password(
             self._keyring_client_name,
-            self.KEYRING_TOKEN_KEY)
+            Vault.ACCESS_TOKEN_KEY)
         keyring.delete_password(
             self._keyring_client_name,
-            self.KEYRING_REFRESH_TOKEN_KEY)
+            Vault.REFRESH_TOKEN_KEY)
