@@ -20,7 +20,7 @@ def urljoin(base, *parts):
     for part in parts:
         result += '/'+part
     result = re.sub(
-        r'(?<!\:)\/{2,}',
+        r'(?<!/)(?<!:)/{2,}',
         '/',
         result)
     return result
