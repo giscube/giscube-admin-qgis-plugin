@@ -8,7 +8,7 @@ class Oauth:
     """
     Contains Oauth2 constants.
     """
-    PATH = 'o/token'
+    PATH = 'o/token/'
     BAD_CREDENTIALS_STATUS = 401
 
 
@@ -16,9 +16,9 @@ class Api:
     """
     Contains API constants.
     """
-    PATH = 'api/v1'
-    PROJECTS = 'projects'
-    BAD_CREDENTIALS_STATUS = 401
+    PATH = 'api/v1/'
+    PROJECTS = 'projects/'
+    BAD_CREDENTIALS = 401
 
 
 class Vault:
