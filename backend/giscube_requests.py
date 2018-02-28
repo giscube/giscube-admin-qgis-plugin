@@ -10,10 +10,15 @@ import requests
 
 
 def urljoin(base, *parts):
+    """
+    Joins the base and the parts separating them with a slash. Removes
+    duplicated slashes except if is part of the protocol (ie. https://).
+    :param base: Base url.
+    :type base: str
+    """
     result = base
     for part in parts:
         result += '/'+part
-    # Remove duplicated slashes except if it's from the protocol (https://)
     result = re.sub(
         r'(?<!\:)\/{2,}',
         '/',
@@ -28,7 +33,7 @@ class BadCredentials(ConnectionError):
     pass
 
 
-class GiscubeRequests:  # TODO do all the https requests
+class GiscubeRequests:
     """
     Handles all the requests to the Giscube server. May return a BadCredentials
     error.
