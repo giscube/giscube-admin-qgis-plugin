@@ -3,6 +3,10 @@
 Package containing all the classes and utilities to communicate with the
 Giscube server.
 """
+from urllib.parse import urljoin
+
+from PyQt5.QtCore import QDir
+import requests
 
 
 class BadCredentials(ConnectionError):
@@ -17,8 +21,7 @@ class GiscubeRequests:  # TODO do all the https requests
     Handles all the requests to the Giscube server. May return a BadCredentials
     error.
     """
-    def __init__(self, server_ip, token_handler):
-        self.__ip = server_ip
+    def __init__(self, token_handler):
         self.__token_handler = token_handler
 
     def requestProjectsList(self):
@@ -28,15 +31,44 @@ class GiscubeRequests:  # TODO do all the https requests
         """
         return []
 
-    def requestProject(self, project_name):
+    def requestProject(self, project_id):
         """
         Downloads the project file and returns its path.
+        :param project_id: Project's ID in the server.
+        :type project_id: int or str
+        :raises requests.exceptions.HTTPError: when the server responses with
+        an unexpected error status code
         """
+        path = QDir.tempPath() + '/qgis-admin-project-'+project_id+'.qgs'
+        response = requests.get(
+            urljoin(
+                self.__token_handler.server_url,
+                'projects',
+                project_id),
+            params={
+                'client_id': self.__token_handler.client_id,
+                'access_token': self.__token_handler.access_token,
+            })
+        response_object = response.json()
+
+        # TODO: add expected errors checking
+        response.raise_for_status()
+
+        with open(path, 'w') as f:
+
+            if 'data' in response_object:  # TODO: add type checking
+                f.write(response_object['data'])
+
         return path
 
-    def pushProject(self, path, project_name):
+    def pushProject(self, path, project_id):
         """
         Saves the project in a path to the server with project_name overriding
         it if exists. May return a BadCredentials error.
+        :param path: Project's ID in the server.
+        :type path: str or unicode
+        :param project_id: Project's ID in the server.
+        :type project_id: int or str
         """
+        # TODO
         pass
