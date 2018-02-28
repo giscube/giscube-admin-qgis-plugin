@@ -24,5 +24,5 @@ class TestUrljoin(TestCase):
 
         self.assertEqual(
             utils.urljoin('file:///usr/bin/', 'level1', 'level2'),
-            'file:///usr/bin/level1/level2/'
+            'file:///usr/bin/level1/level2'
         )

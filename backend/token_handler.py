@@ -9,7 +9,7 @@ import json
 import requests
 import keyring
 
-from utils import urljoin
+from .utils import urljoin
 
 
 class TokenHandler:
