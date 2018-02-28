@@ -61,7 +61,7 @@ class GiscubeRequests:  # TODO do all the https requests
 
         return path
 
-    def push_project(self, path, project_id):
+    def push_project(self, path, title, project_id):
         """
         Saves the project in a path to the server with project_name overriding
         it if exists. May return a BadCredentials error.
@@ -69,6 +69,31 @@ class GiscubeRequests:  # TODO do all the https requests
         :type path: str or unicode
         :param project_id: Project's ID in the server.
         :type project_id: int or str
+        :raises requests.exceptions.HTTPError: when the server responses with
+        an unexpected error status code
         """
-        # TODO
-        pass
+        try:
+            f = open(path, 'r')
+            qgis_project = f.read()
+            f.close()
+        except:
+            return False
+
+        response = requests.put(
+            urljoin(
+                self.__token_handler.server_url,
+                'projects',
+                project_id),
+            params={
+                'client_id': self.__token_handler.client_id,
+                'access_token': self.__token_handler.access_token,
+            },
+            data={
+                'title': title,
+                'data': qgis_project,
+            })
+
+        # TODO: Add exepected errors
+        response.raise_for_status()
+
+        return True
