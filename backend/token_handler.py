@@ -36,8 +36,7 @@ class TokenHandler:
         :type server_url: str
         :param client_id: Application Oauth client ID
         :type client_id: str or unicode
-        :param save_tokens: Enables saving the tokens locally (using the OS
-        "safe" system)
+        :param save_tokens: Enables saving the tokens in a local vault
         :type save_tokens: bool
         """
 
@@ -159,7 +158,7 @@ class TokenHandler:
 
     def __load_tokens(self):
         """
-        Loads the tokens in a safe place.
+        Loads the tokens from a safe place.
         """
         if not self._save:
             return
@@ -173,7 +172,7 @@ class TokenHandler:
 
     def __save_tokens(self):
         """
-        Saves the tokens in a safe place.
+        Saves the tokens in a safe place (locally).
         """
         if not self._save:
             return
@@ -195,3 +194,14 @@ class TokenHandler:
                 self._keyring_client_name,
                 self.KEYRING_REFRESH_TOKEN_KEY,
                 self.__refresh_token)
+
+    def delete_saved(self):
+        """
+        Deletes the locally saved tokens (if they are).
+        """
+        keyring.delete_password(
+            self._keyring_client_name,
+            self.KEYRING_TOKEN_KEY)
+        keyring.delete_password(
+            self._keyring_client_name,
+            self.KEYRING_REFRESH_TOKEN_KEY)
