@@ -49,7 +49,7 @@ class TokenHandler:
         else:
             self._keyring_client_name = self.KEYRING_APP_NAME
 
-        self.__loadTokens()
+        self.__load_tokens()
 
     @property
     def server_url(self):
@@ -103,7 +103,7 @@ class TokenHandler:
                 'user': user,
                 'password': password,
                 'grant_type': 'password',
-                'client_id': self.CLIENT_ID,
+                'client_id': self._client_id,
             }
         )
 
@@ -137,7 +137,7 @@ class TokenHandler:
             data={
                 'refresh-token': self.refresh_token,
                 'grant_type': 'refresh_token',
-                'client_id': self.CLIENT_ID,
+                'client_id': self._client_id,
             }
         )
 
