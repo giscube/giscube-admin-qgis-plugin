@@ -98,11 +98,20 @@ class GiscubeRequests:  # TODO do all the https requests
         except:
             return False
 
-        response = requests.put(
-            urljoin(
+        if project_id is None:  # if need to create a new project
+            request = requests.post
+            url = urljoin(
+                self.__token_handler.server_url,
+                'projects')
+        else:
+            request = requests.put
+            url = urljoin(
                 self.__token_handler.server_url,
                 'projects',
-                project_id),
+                project_id)
+
+        response = request(
+            url,
             params={
                 'client_id': self.__token_handler.client_id,
                 'access_token': self.__token_handler.access_token,
