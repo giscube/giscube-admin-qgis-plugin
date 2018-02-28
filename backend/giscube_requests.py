@@ -3,10 +3,22 @@
 Package containing all the classes and utilities to communicate with the
 Giscube server.
 """
-from urllib.parse import urljoin
+import re
 
 from PyQt5.QtCore import QDir
 import requests
+
+
+def urljoin(base, *parts):
+    result = base
+    for part in parts:
+        result += '/'+part
+    # Remove duplicated slashes except if it's from the protocol (https://)
+    result = re.sub(
+        r'(?<!\:)\/{2,}',
+        '/',
+        result)
+    return result
 
 
 class BadCredentials(ConnectionError):
@@ -21,6 +33,9 @@ class GiscubeRequests:  # TODO do all the https requests
     Handles all the requests to the Giscube server. May return a BadCredentials
     error.
     """
+    API_PATH = 'api/v1'
+    API_PROJECTS = 'projects'
+
     def __init__(self, token_handler):
         self.__token_handler = token_handler
 
@@ -33,7 +48,8 @@ class GiscubeRequests:  # TODO do all the https requests
         response = requests.get(
             urljoin(
                 self.__token_handler.server_url,
-                'projects'),
+                self.API_PATH,
+                self.API_PROJECTS),
             params={
                 'client_id': self.__token_handler.client_id,
                 'access_token': self.__token_handler.access_token,
@@ -62,7 +78,8 @@ class GiscubeRequests:  # TODO do all the https requests
         response = requests.get(
             urljoin(
                 self.__token_handler.server_url,
-                'projects',
+                self.API_PATH,
+                self.API_PROJECTS,
                 project_id),
             params={
                 'client_id': self.__token_handler.client_id,
@@ -102,12 +119,14 @@ class GiscubeRequests:  # TODO do all the https requests
             request = requests.post
             url = urljoin(
                 self.__token_handler.server_url,
-                'projects')
+                self.API_PATH,
+                self.API_PROJECTS)
         else:
             request = requests.put
             url = urljoin(
                 self.__token_handler.server_url,
-                'projects',
+                self.API_PATH,
+                self.API_PROJECTS,
                 project_id)
 
         response = request(
