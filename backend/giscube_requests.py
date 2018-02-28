@@ -24,14 +24,14 @@ class GiscubeRequests:  # TODO do all the https requests
     def __init__(self, token_handler):
         self.__token_handler = token_handler
 
-    def requestProjectsList(self):
+    def request_projects_list(self):
         """
         Returns a list with all the projects. May return a BadCredentials
         error.
         """
         return []
 
-    def requestProject(self, project_id):
+    def request_project(self, project_id):
         """
         Downloads the project file and returns its path.
         :param project_id: Project's ID in the server.
@@ -61,7 +61,7 @@ class GiscubeRequests:  # TODO do all the https requests
 
         return path
 
-    def pushProject(self, path, project_id):
+    def push_project(self, path, project_id):
         """
         Saves the project in a path to the server with project_name overriding
         it if exists. May return a BadCredentials error.
