@@ -46,32 +46,32 @@ class TokenHandler:
         return self._server_url
 
     @property
-    def hasAccessToken(self):
+    def has_access_token(self):
         """
         Does it have an access token?
         """
-        return self.__token is not None
+        return self.__access_token is not None
 
     @property
-    def accessToken(self):
+    def access_token(self):
         """
         Get the current access token.
         """
-        return self.__token
+        return self.__access_token
 
     @property
-    def hasRefreshToken(self):
+    def has_refresh_token(self):
         """
         Does it have a refresh token?
         """
-        return self.__refreshToken is not None
+        return self.__refresh_token is not None
 
     @property
-    def refreshToken(self):
+    def refresh_token(self):
         """
         Refreshes the token with the refresh token. Returns if it succeded.
         """
-        if not self.hasRefreshToken():
+        if not self.has_refresh_token:
             return False
 
         response = requests.post(
@@ -90,19 +90,23 @@ class TokenHandler:
         response_object = json.load(response.content)
 
         token = response_object['access_token']
-        refreshToken = response_object['refresh_token']
+        refresh_token = response_object['refresh_token']
 
         self.__token = token
-        self.__refreshToken = refreshToken
+        self.__refresh_token = refresh_token
         self.__saveTokens()
 
         return True
 
-    def requestNewToken(self, user, password):
+    def request_new_token(self, user, password):
         """
         Requests a new token to the server. Returns if succeded.
         It will raise a requests.exceptions.HTTPError if the server responses
         with an error status code.
+        :param user: User's username
+        :type user: str or unicode
+        :param password: User's password
+        :type password: str or unicode
         """
 
         response = requests.post(
@@ -121,32 +125,30 @@ class TokenHandler:
         response_object = json.load(response.content)
 
         if 'access_token' in response_object:
-            token = response_object['access_token']
+            self.__access_token = response_object['access_token']
         else:
             return False
 
-        refreshToken = None
+        self.__refresh_token = None
         if 'refresh-token' in response_object:
-            refreshToken = response_object['refresh-token']
+            self.__refresh_token = response_object['refresh-token']
 
-        self.__token = token
-        self.__refreshToken = refreshToken
-        self.__saveTokens()
+        self.__save_tokens()
 
         return True
 
-    def __loadTokens(self):
+    def __load_tokens(self):
         """
         Loads the tokens in a safe place.
         """
-        self.token = keyring.get_password(
+        self.__access_token = keyring.get_password(
             self.KEYRING_APP_NAME,
             self.KEYRING_TOKEN_KEY)
-        self.refresh_token = keyring.get_password(
+        self.__refresh_token = keyring.get_password(
             self.KEYRING_APP_NAME,
             self.KEYRING_REFRESH_TOKEN_KEY)
 
-    def __saveTokens(self):
+    def __save_tokens(self):
         """
         Saves the tokens in a safe place.
         """
@@ -161,9 +163,9 @@ class TokenHandler:
             keyring.set_password(
                 self.KEYRING_APP_NAME,
                 self.KEYRING_TOKEN_KEY,
-                self.token)
+                self.__access_token)
         if self.refresh_token is not None:
             keyring.set_password(
                 self.KEYRING_APP_NAME,
                 self.KEYRING_REFRESH_TOKEN_KEY,
-                self.refresh_token)
+                self.__refresh_token)
