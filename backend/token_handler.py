@@ -28,16 +28,11 @@ class TokenHandler:
         """
         Contructor. Loads the saved tokens.
         """
-        self.__loadTokens()
+        self._keyring_client_name = self.KEYRING_APP_NAME+'@'+client_id
         self._server_url = server_url
-        self._cliet_id = client_id
+        self._client_id = client_id
 
-    @property
-    def client_id(self):
-        """
-        Gets the client ID for this server.
-        """
-        return self._server_url
+        self.__loadTokens()
 
     @property
     def server_url(self):
@@ -45,6 +40,13 @@ class TokenHandler:
         Gets the URL of the credentials of the server.
         """
         return self._server_url
+
+    @property
+    def client_id(self):
+        """
+        Gets the client ID for this server.
+        """
+        return self._client_id
 
     @property
     def has_access_token(self):
@@ -143,7 +145,7 @@ class TokenHandler:
         Loads the tokens in a safe place.
         """
         self.__access_token = keyring.get_password(
-            self.KEYRING_APP_NAME,
+            self._keyring_client_name,
             self.KEYRING_TOKEN_KEY)
         self.__refresh_token = keyring.get_password(
             self.KEYRING_APP_NAME,
@@ -154,19 +156,19 @@ class TokenHandler:
         Saves the tokens in a safe place.
         """
         keyring.delete_password(
-            self.KEYRING_APP_NAME,
+            self._keyring_client_name,
             self.KEYRING_TOKEN_KEY)
         keyring.delete_password(
-            self.KEYRING_APP_NAME,
+            self._keyring_client_name,
             self.KEYRING_REFRESH_TOKEN_KEY)
 
         if self.token is not None:
             keyring.set_password(
-                self.KEYRING_APP_NAME,
+                self._keyring_client_name,
                 self.KEYRING_TOKEN_KEY,
                 self.__access_token)
         if self.refresh_token is not None:
             keyring.set_password(
-                self.KEYRING_APP_NAME,
+                self._keyring_client_name,
                 self.KEYRING_REFRESH_TOKEN_KEY,
                 self.__refresh_token)
