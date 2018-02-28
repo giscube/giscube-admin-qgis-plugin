@@ -64,11 +64,10 @@ class GiscubeRequests:
 
         response_object = response.json()
         # if 'results' in response_object:
-        projects = []  # TODO Maybe another container would work better
-        for entry in response_object['results']:
-            project = (entry['id'], entry['name'])
-            projects.append(project)
-
+        # TODO Maybe another container would work better
+        projects = {
+            result['id']: result['title']
+            for result in response_object['result']}
         return projects
 
     def request_project(self, project_id):
