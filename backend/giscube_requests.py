@@ -26,10 +26,29 @@ class GiscubeRequests:  # TODO do all the https requests
 
     def request_projects_list(self):
         """
-        Returns a list with all the projects. May return a BadCredentials
-        error.
+        Returns a list with all the projects.
+        :raises requests.exceptions.HTTPError: when the server responses with
+        an unexpected error status code
         """
-        return []
+        response = requests.get(
+            urljoin(
+                self.__token_handler.server_url,
+                'projects'),
+            params={
+                'client_id': self.__token_handler.client_id,
+                'access_token': self.__token_handler.access_token,
+            })
+        # TODO: add expected errors checking
+        response.raise_for_status()
+
+        response_object = response.json()
+        # if 'results' in response_object:
+        projects = []  # TODO Maybe another container would work better
+        for entry in response_object['results']:
+            project = (entry['id'], entry['name'])
+            projects.append(project)
+
+        return projects
 
     def request_project(self, project_id):
         """
