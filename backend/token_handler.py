@@ -46,24 +46,27 @@ class TokenHandler:
         return self._server_url
 
     @property
-    def token(self):
+    def hasAccessToken(self):
         """
-        Get the current token.
-        """
-        return self.__token
-
-    def hasToken(self):
-        """
-        Does it have a token?
+        Does it have an access token?
         """
         return self.__token is not None
 
+    @property
+    def accessToken(self):
+        """
+        Get the current access token.
+        """
+        return self.__token
+
+    @property
     def hasRefreshToken(self):
         """
         Does it have a refresh token?
         """
         return self.__refreshToken is not None
 
+    @property
     def refreshToken(self):
         """
         Refreshes the token with the refresh token. Returns if it succeded.
