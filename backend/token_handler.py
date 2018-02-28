@@ -4,11 +4,12 @@ Contains all the classes and constants required to request, refresh and handle
 the server tokens.
 """
 
-from urllib.parse import urljoin
 import json
 
 import requests
 import keyring
+
+from utils import urljoin
 
 
 class TokenHandler:
@@ -16,7 +17,7 @@ class TokenHandler:
     Acquires (requests to the server), saves (safely) and refreshes a token.
     """
 
-    GISCUBE_OAUTH_PATH = 'o/token/'
+    GISCUBE_OAUTH_PATH = 'o/token'
     GISCUBE_OAUTH_BAD_CREDENTIALS_STATUS = 401
 
     KEYRING_APP_NAME = "giscube-admin-qgis-plugin"
