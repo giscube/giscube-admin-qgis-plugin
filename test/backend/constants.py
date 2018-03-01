@@ -11,4 +11,4 @@ class Test:
     USER = 'user'
     PASSWORD = 'password'
 
-    MOCK_PROJECT = 0
+    MOCK_PROJECT = {'id': 0, 'name': 'mock_project.qgs', 'data': 'Mock OK'}
