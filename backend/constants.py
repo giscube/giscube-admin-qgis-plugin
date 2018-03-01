@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-File that contains the GiscubeApiclass.
+File that contains the list of constants of the backend.
 """
 
 
