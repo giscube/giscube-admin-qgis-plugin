@@ -4,12 +4,11 @@ Test units for the package backend.token_handler.
 """
 
 from unittest import TestCase, mock
-import logging
 
 from .constants import Test
 from backend.token_handler import TokenHandler
 
-from .mocks import logger, mocked_post
+from .mocks import mocked_post
 
 
 class TestTokenHandler(TestCase):
