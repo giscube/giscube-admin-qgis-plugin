@@ -3,14 +3,18 @@
 Test units for the package backend.token_handler.
 """
 
-from unittest import TestCase
+from unittest import TestCase, mock
+import logging
 
 from .constants import Test
 from backend.token_handler import TokenHandler
 
+from .mocks import logger, mocked_post
+
 
 class TestTokenHandler(TestCase):
 
+    @mock.patch('requests.post', mocked_post)
     def test_properties(self):
         handler = TokenHandler(Test.URL, Test.CLIENT_ID, False)
         self.assertEqual(handler.server_url, Test.URL)
@@ -20,6 +24,7 @@ class TestTokenHandler(TestCase):
         self.assertIsNone(handler.access_token)
         self.assertFalse(handler.has_refresh_token)
 
+    @mock.patch('requests.post', mocked_post)
     def test_get_refresh(self):
         handler = TokenHandler(Test.URL, Test.CLIENT_ID, False)
 
@@ -43,6 +48,7 @@ class TestTokenHandler(TestCase):
 
         self.assertNotEqual(old_access_token, handler.access_token)
 
+    @mock.patch('requests.post', mocked_post)
     def test_saving_loading(self):
         handler = TokenHandler(
             Test.URL,
@@ -72,3 +78,6 @@ class TestTokenHandler(TestCase):
         self.assertFalse(handler.has_access_token)
         self.assertIsNone(handler.access_token)
         self.assertFalse(handler.has_refresh_token)
+
+
+logger.setLevel(logging.DEBUG)
