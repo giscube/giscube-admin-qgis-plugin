@@ -10,3 +10,5 @@ class Test:
     CLIENT_ID = ''
     USER = 'user'
     PASSWORD = 'password'
+
+    MOCK_PROJECT = 0
