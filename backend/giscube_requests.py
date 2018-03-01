@@ -69,15 +69,17 @@ class GiscubeRequests:
 
         return path
 
-    def push_project(self, path, title, project_id):
+    def push_project(self, project_id, title, path):
         """
         Saves the project from a path to the server with project_name.
         Overrides it in the server if a project_id is given.
 
-        :param path: Project's ID in the server.
-        :type path: str or unicode
         :param project_id: Project's ID in the server.
         :type project_id: int or str
+        :param title: Project's tile in the server.
+        :type title: str
+        :param path: Project's ID in the server.
+        :type path: str or unicode
         :raise BadCredentials: When the servers negates the credentials,
         preventing to do the request
         :raises requests.exceptions.HTTPError: When the server responses with
