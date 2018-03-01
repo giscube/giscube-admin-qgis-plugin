@@ -78,6 +78,3 @@ class TestTokenHandler(TestCase):
         self.assertFalse(handler.has_access_token)
         self.assertIsNone(handler.access_token)
         self.assertFalse(handler.has_refresh_token)
-
-
-logger.setLevel(logging.DEBUG)
