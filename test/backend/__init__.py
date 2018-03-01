@@ -2,4 +2,4 @@
 """
 Backend tests package.
 """
-__all__ = ["token_handler", "giscube_requests", "utils"]
+__all__ = ["token_handler_test", "giscube_requests_test", "utils_test"]
