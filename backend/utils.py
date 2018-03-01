@@ -13,9 +13,9 @@ def urljoin(base, *parts):
     :param base: Base url.
     :type base: str
     """
-    result = base
+    result = str(base)
     for part in parts:
-        result += '/'+part
+        result += '/'+str(part)
     result = re.sub(
         r'(?<!/)(?<!:)/{2,}',
         '/',

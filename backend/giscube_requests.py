@@ -43,9 +43,12 @@ class GiscubeRequests:
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
+        if not self.__token_handler.has_access_token:
+            raise BadCredentials()
+
         response = self.__get_result(self.__make_request_projects_list)
         projects = {
-            result['id']: result['title'] for result in response['result']
+            result['id']: result['name'] for result in response['results']
         }
         return projects
 
@@ -60,9 +63,12 @@ class GiscubeRequests:
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
+        if not self.__token_handler.has_access_token:
+            raise BadCredentials()
+
         response = self.__get_result(self.__make_request_project, project_id)
 
-        path = QDir.tempPath() + '/qgis-admin-project-'+project_id+'.qgs'
+        path = QDir.tempPath() + '/qgis-admin-project-'+str(project_id)+'.qgs'
         with open(path, 'w') as f:
             if 'data' in response:
                 f.write(response['data'])
@@ -85,6 +91,9 @@ class GiscubeRequests:
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
+        if not self.__token_handler.has_access_token:
+            raise BadCredentials()
+
         with open(path, 'r') as f:
             qgis_project = f.read()
 
@@ -174,7 +183,7 @@ class GiscubeRequests:
                 self.__token_handler.server_url,
                 Api.PATH,
                 Api.PROJECTS,
-                project_id+'/')
+                str(project_id)+'/')
 
         return request(
             url,
