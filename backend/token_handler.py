@@ -4,8 +4,6 @@ Contains all the classes and constants required to request, refresh and handle
 the server tokens.
 """
 
-import json
-
 import requests
 import keyring
 
@@ -37,12 +35,14 @@ class TokenHandler:
 
         self._server_url = server_url
         self._client_id = client_id
+        self.__access_token = None
+        self.__refresh_token = None
 
         self._save = save_tokens
         if keyring_name is not None:
             self._keyring_client_name = keyring_name
         else:
-            self._keyring_client_name = self._keyring_client_name
+            self._keyring_client_name = self.KEYRING_APP_NAME
 
         self.__load_tokens()
 
@@ -105,7 +105,7 @@ class TokenHandler:
         if response == Oauth.BAD_CREDENTIALS_STATUS:
             return False
         response.raise_for_status()
-        response_object = json.load(response.content)
+        response_object = response.json()
 
         if 'access_token' in response_object:
             self.__access_token = response_object['access_token']
@@ -140,7 +140,7 @@ class TokenHandler:
             return False
 
         response.raise_for_status()
-        response_object = json.load(response.content)
+        response_object = response.json()
 
         token = response_object['access_token']
         refresh_token = response_object['refresh_token']
@@ -172,19 +172,14 @@ class TokenHandler:
         if not self._save:
             return
 
-        keyring.delete_password(
-            self._keyring_client_name,
-            Vault.ACCESS_TOKEN_KEY)
-        keyring.delete_password(
-            self._keyring_client_name,
-            Vault.REFRESH_TOKEN_KEY)
+        self.delete_saved()
 
-        if self.token is not None:
+        if self.has_access_token:
             keyring.set_password(
                 self._keyring_client_name,
                 Vault.ACCESS_TOKEN_KEY,
                 self.__access_token)
-        if self.refresh_token is not None:
+        if self.has_refresh_token:
             keyring.set_password(
                 self._keyring_client_name,
                 Vault.REFRESH_TOKEN_KEY,
@@ -194,9 +189,16 @@ class TokenHandler:
         """
         Deletes the locally saved tokens (if they are).
         """
-        keyring.delete_password(
-            self._keyring_client_name,
-            Vault.ACCESS_TOKEN_KEY)
-        keyring.delete_password(
-            self._keyring_client_name,
-            Vault.REFRESH_TOKEN_KEY)
+        try:
+            keyring.delete_password(
+                self._keyring_client_name,
+                Vault.ACCESS_TOKEN_KEY)
+        except:
+            pass
+
+        try:
+            keyring.delete_password(
+                self._keyring_client_name,
+                Vault.REFRESH_TOKEN_KEY)
+        except:
+            pass
