@@ -17,7 +17,7 @@ class Api:
     Contains API constants.
     """
     PATH = 'api/v1/'
-    PROJECTS = 'projects/'
+    PROJECTS = 'qgisserver/project/'
     BAD_CREDENTIALS = 401
 
 

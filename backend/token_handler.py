@@ -95,7 +95,7 @@ class TokenHandler:
         response = requests.post(
             urljoin(self._server_url, Oauth.PATH),
             data={
-                'user': user,
+                'username': user,
                 'password': password,
                 'grant_type': 'password',
                 'client_id': self._client_id,
