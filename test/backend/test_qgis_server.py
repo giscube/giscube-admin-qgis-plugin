@@ -29,10 +29,10 @@ class TestGiscubeRequests(TestCase):
         qgis_server = giscube.qgis_server
 
         with self.assertRaises(BadCredentials):
-            qgis_server.request_projects_list()
+            qgis_server.projects()
 
         with self.assertRaises(BadCredentials):
-            qgis_server.request_project(Test.MOCK_PROJECT['id'])
+            qgis_server.download_project(Test.MOCK_PROJECT['id'])
 
         with self.assertRaises(BadCredentials):
             qgis_server.upload_project(

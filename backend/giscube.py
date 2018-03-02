@@ -45,7 +45,7 @@ class Giscube:
         if keyring_name is not None:
             self._keyring_client_name = keyring_name
         else:
-            self._keyring_client_name = self.KEYRING_APP_NAME
+            self._keyring_client_name = self.KEYRING_NAME
 
         self.__load_tokens()
 
