@@ -9,7 +9,7 @@ class Oauth:
     Contains Oauth2 constants.
     """
     PATH = 'o/token/'
-    BAD_CREDENTIALS_STATUS = 401
+    BAD_CREDENTIALS = 401
 
 
 class Api:

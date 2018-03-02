@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 """
-Backend package of giscube-admin-qgis-plugin.
+Backend package of giscube-admin-qgis-plugin. Contains a Giscube API client,
+custom exceptions and internal utilities (for this package).
 """
-from .token_handler import TokenHandler
-from .giscube_requests import GiscubeRequests
-__all__ = ["TokenHandler", "GiscubeRequests"]
+from .giscube import Giscube
+from .exceptions import BadCredentials
+
+__all__ = ["Giscube", "BadCredentials"]

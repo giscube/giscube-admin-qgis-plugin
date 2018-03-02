@@ -8,51 +8,43 @@ from PyQt5.QtCore import QDir
 import requests
 
 from .constants import Api
+from .exceptions import BadCredentials
 from .utils import urljoin
 
 
-class BadCredentials(ConnectionError):
+class QgisServer:
     """
-    The credentials or the token used are wrong or have expired and cannot be
-    refreshed.
-    """
-    pass
-
-
-class GiscubeRequests:
-    """
-    Handles all the requests to the Giscube server. May return a BadCredentials
-    error.
+    Giscube's QGis Server API client.
     """
 
-    def __init__(self, token_handler):
+    def __init__(self, giscube):
         """
         Constructor.
 
-        :param token_handler: Object that handles the tokens.
-        :type token_handler: backend.TokenHandler
+        :param token_handler: Main Giscube API client.
+        :type token_handler: backend.Giscube
         """
-        self.__token_handler = token_handler
+        self.__giscube = giscube
 
-    def request_projects_list(self):
+    def projects(self):
         """
-        Returns a list with all the projects.
+        Returns a list with all the projects available.
 
         :raise BadCredentials: When the servers negates the credentials,
         preventing to do the request
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
-        if not self.__token_handler.has_access_token:
+        if not self.__giscube.is_logged_in:
             raise BadCredentials()
 
-        response = self.__get_result(self.__make_request_projects_list)
+        response = self.__get_result(self.__request_projects_list)
         projects = {
             result['id']: result['name'] for result in response['results']
         }
         return projects
 
-    def request_project(self, project_id):
+    def download_project(self, project_id):
         """
         Downloads the project file and returns its path.
 
@@ -63,10 +55,10 @@ class GiscubeRequests:
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
-        if not self.__token_handler.has_access_token:
+        if not self.__giscube.is_logged_in:
             raise BadCredentials()
 
-        response = self.__get_result(self.__make_request_project, project_id)
+        response = self.__get_result(self.__request_project, project_id)
 
         path = QDir.tempPath() + '/qgis-admin-project-'+str(project_id)+'.qgs'
         with open(path, 'w') as f:
@@ -75,10 +67,11 @@ class GiscubeRequests:
 
         return path
 
-    def push_project(self, project_id, title, path):
+    def upload_project(self, project_id, title, path):
         """
-        Saves the project from a path to the server with project_name.
-        Overrides it in the server if a project_id is given.
+        Uploads the project from a path to the server with project_name.
+        Overrides it in the server if a project_id is given (there must exist a
+        project with that ID).
 
         :param project_id: Project's ID in the server.
         :type project_id: int or str
@@ -91,14 +84,14 @@ class GiscubeRequests:
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
-        if not self.__token_handler.has_access_token:
+        if not self.__giscube.is_logged_in:
             raise BadCredentials()
 
         with open(path, 'r') as f:
             qgis_project = f.read()
 
         self.__get_result(
-            self.__make_push_project,
+            self.__push_project,
             project_id,
             title,
             qgis_project,
@@ -123,10 +116,10 @@ class GiscubeRequests:
         """
         response = make_request(*args)
         if response.status_code == Api.BAD_CREDENTIALS:
-            if not self.__token_handler.has_refresh_token:
+            if not self.__giscube.has_refresh_token:
                 raise BadCredentials()
 
-            self.__token_handler.refresh_token()
+            self.__giscube.refresh_token()
 
             response = make_request(*args)
             if response.status_code == Api.BAD_CREDENTIALS:
@@ -139,48 +132,42 @@ class GiscubeRequests:
         else:
             return response
 
-    def __make_request_projects_list(self):
-        """
-        Function that performs the request to get the list of projects.
-        """
+    def __request_projects_list(self):
         return requests.get(
             urljoin(
-                self.__token_handler.server_url,
+                self.__giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS),
             params={
-                'client_id': self.__token_handler.client_id,
-                'access_token': self.__token_handler.access_token,
+                'client_id': self.__giscube.client_id,
+                'access_token': self.__giscube.access_token,
             }
         )
 
-    def __make_request_project(self, project_id):
-        """
-        Function that requests the server for an specific project.
-        """
+    def __request_project(self, project_id):
         return requests.get(
             urljoin(
-                self.__token_handler.server_url,
+                self.__giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS,
                 project_id),
             params={
-                'client_id': self.__token_handler.client_id,
-                'access_token': self.__token_handler.access_token,
+                'client_id': self.__giscube.client_id,
+                'access_token': self.__giscube.access_token,
             }
         )
 
-    def __make_push_project(self, project_id, title, qgis_project):
+    def __push_project(self, project_id, title, qgis_project):
         if project_id is None:  # if need to create a new project
             request = requests.post
             url = urljoin(
-                self.__token_handler.server_url,
+                self.__giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS)
         else:
             request = requests.put
             url = urljoin(
-                self.__token_handler.server_url,
+                self.__giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS,
                 str(project_id)+'/')
@@ -188,8 +175,8 @@ class GiscubeRequests:
         return request(
             url,
             params={
-                'client_id': self.__token_handler.client_id,
-                'access_token': self.__token_handler.access_token,
+                'client_id': self.__giscube.client_id,
+                'access_token': self.__giscube.access_token,
             },
             data={
                 'title': title,

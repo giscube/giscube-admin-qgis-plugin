@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """
-Contains all the classes and constants required to request, refresh and handle
-the server tokens.
+Package containing the Giscube API client.
 """
 
 import requests
@@ -9,13 +8,15 @@ import keyring
 
 from .constants import Oauth, Vault
 from .utils import urljoin
+from .qgis_server import QgisServer
 
 
-class TokenHandler:
+class Giscube:
     """
-    Acquires (requests to the server), saves (safely) and refreshes a token.
+    Giscube API client.
+    Handles the login and recived token. It can be saved in a vault.
     """
-    KEYRING_APP_NAME = "giscube-admin-qgis-plugin"
+    KEYRING_NAME = "giscube-admin-qgis-plugin"
 
     def __init__(
             self,
@@ -38,6 +39,8 @@ class TokenHandler:
         self.__access_token = None
         self.__refresh_token = None
 
+        self.__qgis_server = None
+
         self._save = save_tokens
         if keyring_name is not None:
             self._keyring_client_name = keyring_name
@@ -47,16 +50,26 @@ class TokenHandler:
         self.__load_tokens()
 
     @property
+    def qgis_server(self):
+        """
+        Giscube's QGis Server API client.
+        """
+        if self.__qgis_server is None:
+            self.__qgis_server = QgisServer(self)
+
+        return self.__qgis_server
+
+    @property
     def server_url(self):
         """
-        Gets the URL of the credentials of the server.
+        Base URL of the server.
         """
         return self._server_url
 
     @property
     def client_id(self):
         """
-        Gets the client ID for this server.
+        Gets the client ID for this client, for this server.
         """
         return self._client_id
 
@@ -70,7 +83,7 @@ class TokenHandler:
     @property
     def access_token(self):
         """
-        Get the current access token.
+        Current access token.
         """
         return self.__access_token
 
@@ -80,6 +93,13 @@ class TokenHandler:
         Does it have a refresh token?
         """
         return self.__refresh_token is not None
+
+    @property
+    def is_logged_in(self):
+        """
+        Is the user logged in?
+        """
+        return self.has_access_token
 
     def login(self, user, password):
         """
@@ -102,7 +122,7 @@ class TokenHandler:
             }
         )
 
-        if response == Oauth.BAD_CREDENTIALS_STATUS:
+        if response == Oauth.BAD_CREDENTIALS:
             return False
         response.raise_for_status()
         response_object = response.json()
@@ -136,7 +156,7 @@ class TokenHandler:
             }
         )
 
-        if response == Oauth.BAD_CREDENTIALS_STATUS:
+        if response == Oauth.BAD_CREDENTIALS:
             return False
 
         response.raise_for_status()
