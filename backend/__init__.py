@@ -2,4 +2,6 @@
 """
 Backend package of giscube-admin-qgis-plugin.
 """
-__all__ = ["token_handler", "giscube_requests", "utils"]
+from .token_handler import TokenHandler
+from .giscube_requests import GiscubeRequests
+__all__ = ["TokenHandler", "GiscubeRequests"]
