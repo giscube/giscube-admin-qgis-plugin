@@ -180,10 +180,12 @@ class Giscube:
 
         self.__access_token = keyring.get_password(
             self._keyring_client_name,
-            Vault.ACCESS_TOKEN_KEY)
+            Vault.ACCESS_TOKEN_KEY,
+        )
         self.__refresh_token = keyring.get_password(
             self._keyring_client_name,
-            Vault.REFRESH_TOKEN_KEY)
+            Vault.REFRESH_TOKEN_KEY,
+        )
 
     def __save_tokens(self):
         """
@@ -198,12 +200,14 @@ class Giscube:
             keyring.set_password(
                 self._keyring_client_name,
                 Vault.ACCESS_TOKEN_KEY,
-                self.__access_token)
+                self.__access_token,
+            )
         if self.has_refresh_token:
             keyring.set_password(
                 self._keyring_client_name,
                 Vault.REFRESH_TOKEN_KEY,
-                self.__refresh_token)
+                self.__refresh_token,
+            )
 
     def delete_saved(self):
         """
@@ -212,13 +216,15 @@ class Giscube:
         try:
             keyring.delete_password(
                 self._keyring_client_name,
-                Vault.ACCESS_TOKEN_KEY)
+                Vault.ACCESS_TOKEN_KEY,
+            )
         except:
             pass
 
         try:
             keyring.delete_password(
                 self._keyring_client_name,
-                Vault.REFRESH_TOKEN_KEY)
+                Vault.REFRESH_TOKEN_KEY,
+            )
         except:
             pass

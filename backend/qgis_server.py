@@ -163,14 +163,16 @@ class QgisServer:
             url = urljoin(
                 self.__giscube.server_url,
                 Api.PATH,
-                Api.PROJECTS)
+                Api.PROJECTS,
+            )
         else:
             request = requests.put
             url = urljoin(
                 self.__giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS,
-                str(project_id)+'/')
+                str(project_id)+'/',
+            )
 
         return request(
             url,
