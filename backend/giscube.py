@@ -122,7 +122,7 @@ class Giscube:
             }
         )
 
-        if response == Oauth.BAD_CREDENTIALS:
+        if response.status_code == Oauth.BAD_CREDENTIALS:
             return False
         response.raise_for_status()
         response_object = response.json()
@@ -156,7 +156,7 @@ class Giscube:
             }
         )
 
-        if response == Oauth.BAD_CREDENTIALS:
+        if response.status_code == Oauth.BAD_CREDENTIALS:
             return False
 
         response.raise_for_status()
