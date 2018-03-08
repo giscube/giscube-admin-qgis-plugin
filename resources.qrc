@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/GiscubeAdmin" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

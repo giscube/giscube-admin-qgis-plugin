@@ -1,0 +1,31 @@
+# Mandatory items:
+[general]
+name=Giscube Admin
+qgisMinimumVersion=3.0
+description=A graphical Giscube administration tool
+version=0.1
+author=Microdisseny Giscube SLU
+email=info@microdisseny.com
+
+about=This plugins allows the user to easily work with a Giscube server from QGIS 3.
+
+tracker=https://github.com/giscube/giscube-admin-qgis-plugin/issues
+repository=https://github.com/giscube/giscube-admin-qgis-plugin
+# End of mandatory metadata
+
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=python
+
+homepage=http://giscube.com/
+category=Plugins
+icon=icon.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
