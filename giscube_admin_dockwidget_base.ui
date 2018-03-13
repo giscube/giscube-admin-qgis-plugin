@@ -37,14 +37,14 @@
      <number>10</number>
     </property>
     <item>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="new_server">
       <property name="text">
        <string>New server</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QTreeWidget" name="treeWidget">
+     <widget class="QTreeWidget" name="servers">
       <column>
        <property name="text">
         <string>object</string>
