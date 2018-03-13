@@ -8,7 +8,7 @@ import sys
 
 from .constants import Test
 
-from backend.constants import Oauth, Api
+from backend.constants import OAuth, Api
 from backend.utils import urljoin
 
 logging.basicConfig()
@@ -53,13 +53,13 @@ def mocked_get(url, params):
                 'results': [Test.MOCK_PROJECT, ]}
             return MockResponse(data, 200)
         else:
-            return MockResponse({}, Api.BAD_CREDENTIALS)
+            return MockResponse({}, Api.UNAUTHORIZED)
 
     elif url.startswith(projects_path):
         if 'access_token' in params and params['access_token'] is not None:
             return MockResponse(Test.MOCK_PROJECT, 200)
         else:
-            return MockResponse({}, Api.BAD_CREDENTIALS)
+            return MockResponse({}, Api.UNAUTHORIZED)
 
 
 def mocked_post(url='', params='', data=''):
@@ -69,7 +69,7 @@ def mocked_post(url='', params='', data=''):
     logger.debug(str(params))
     logger.debug(str(data))
 
-    if url == urljoin(Test.URL, Oauth.PATH):
+    if url == urljoin(Test.URL, OAuth.PATH):
         logger.info('Post to oauth')
         return MockResponse({'access_token': 'test'}, 200)
 
@@ -77,7 +77,7 @@ def mocked_post(url='', params='', data=''):
         if 'access_token' in params and params['access_token'] is not None:
             return MockResponse({}, 200)
         else:
-            return MockResponse({}, Api.BAD_CREDENTIALS)
+            return MockResponse({}, Api.UNAUTHORIZED)
 
 
 def mocked_put(url='', params='', data=''):
@@ -92,4 +92,4 @@ def mocked_put(url='', params='', data=''):
         if 'access_token' in params and params['access_token'] is not None:
             return MockResponse({}, 200)
         else:
-            return MockResponse({}, Api.BAD_CREDENTIALS)
+            return MockResponse({}, Api.UNAUTHORIZED)

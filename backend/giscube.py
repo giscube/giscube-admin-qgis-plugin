@@ -6,7 +6,7 @@ Package containing the Giscube API client.
 import requests
 import keyring
 
-from .constants import Oauth, Vault
+from .constants import OAuth, Vault
 from .utils import urljoin
 from .qgis_server import QgisServer
 
@@ -28,7 +28,7 @@ class Giscube:
         Contructor. Loads, if enabled, the saved tokens.
         :param server_url: Used server service URL
         :type server_url: str
-        :param client_id: Application Oauth client ID
+        :param client_id: Application OAuth client ID
         :type client_id: str or unicode
         :param save_tokens: Enables saving the tokens in a local vault
         :type save_tokens: bool
@@ -113,7 +113,7 @@ class Giscube:
         """
 
         response = requests.post(
-            urljoin(self._server_url, Oauth.PATH),
+            urljoin(self._server_url, OAuth.PATH),
             data={
                 'username': user,
                 'password': password,
@@ -122,7 +122,7 @@ class Giscube:
             }
         )
 
-        if response.status_code == Oauth.BAD_CREDENTIALS:
+        if response.status_code == OAuth.UNAUTHORIZED:
             return False
         response.raise_for_status()
         response_object = response.json()
@@ -148,7 +148,7 @@ class Giscube:
             return False
 
         response = requests.post(
-            urljoin(self._server_url, Oauth.PATH),
+            urljoin(self._server_url, OAuth.PATH),
             data={
                 'refresh-token': self.refresh_token,
                 'grant_type': 'refresh_token',
@@ -156,7 +156,7 @@ class Giscube:
             }
         )
 
-        if response.status_code == Oauth.BAD_CREDENTIALS:
+        if response.status_code == OAuth.UNAUTHORIZED:
             return False
 
         response.raise_for_status()

@@ -8,7 +8,7 @@ from PyQt5.QtCore import QDir
 import requests
 
 from .constants import Api
-from .exceptions import BadCredentials
+from .exceptions import Unauthorized
 from .utils import urljoin
 
 
@@ -30,13 +30,13 @@ class QgisServer:
         """
         Returns a list with all the projects available.
 
-        :raise BadCredentials: When the servers negates the credentials,
+        :raise Unauthorized: When the servers negates the credentials,
         preventing to do the request
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
         if not self.__giscube.is_logged_in:
-            raise BadCredentials()
+            raise Unauthorized()
 
         response = self.__get_result(self.__request_projects_list)
         projects = {
@@ -50,13 +50,13 @@ class QgisServer:
 
         :param project_id: Project's ID in the server.
         :type project_id: int or str
-        :raise BadCredentials: When the servers negates the credentials,
+        :raise Unauthorized: When the servers negates the credentials,
         preventing to do the request
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
         if not self.__giscube.is_logged_in:
-            raise BadCredentials()
+            raise Unauthorized()
 
         response = self.__get_result(self.__request_project, project_id)
 
@@ -79,13 +79,13 @@ class QgisServer:
         :type title: str
         :param path: Project's ID in the server.
         :type path: str or unicode
-        :raise BadCredentials: When the servers negates the credentials,
+        :raise Unauthorized: When the servers negates the credentials,
         preventing to do the request
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
         if not self.__giscube.is_logged_in:
-            raise BadCredentials()
+            raise Unauthorized()
 
         with open(path, 'r') as f:
             qgis_project = f.read()
@@ -109,21 +109,21 @@ class QgisServer:
 
         :param make_request: request function
         :type request: method
-        :raise BadCredentials: When the servers negates the credentials,
+        :raise Unauthorized: When the servers negates the credentials,
         preventing to do the request
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
         response = make_request(*args)
-        if response.status_code == Api.BAD_CREDENTIALS:
+        if response.status_code == Api.UNAUTHORIZED:
             if not self.__giscube.has_refresh_token:
-                raise BadCredentials()
+                raise Unauthorized()
 
             self.__giscube.refresh_token()
 
             response = make_request(*args)
-            if response.status_code == Api.BAD_CREDENTIALS:
-                raise BadCredentials()
+            if response.status_code == Api.UNAUTHORIZED:
+                raise Unauthorized()
 
         response.raise_for_status()
 

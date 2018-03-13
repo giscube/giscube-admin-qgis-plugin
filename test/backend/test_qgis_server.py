@@ -6,7 +6,7 @@ Test units for the package backend.qgis_server.
 from unittest import mock, TestCase
 
 from .constants import Test
-from backend.exceptions import BadCredentials
+from backend.exceptions import Unauthorized
 from backend.giscube import Giscube
 
 from .mocks import mocked_get, mocked_post, mocked_put
@@ -23,18 +23,18 @@ class TestGiscubeRequests(TestCase):
     @mock.patch('requests.get', mocked_get)
     @mock.patch('requests.post', mocked_post)
     @mock.patch('requests.put', mocked_put)
-    def testBadCredentials(self):
+    def testUnauthorized(self):
         # token handler without any login
         giscube = Giscube(Test.URL, Test.CLIENT_ID, False)
         qgis_server = giscube.qgis_server
 
-        with self.assertRaises(BadCredentials):
+        with self.assertRaises(Unauthorized):
             qgis_server.projects()
 
-        with self.assertRaises(BadCredentials):
+        with self.assertRaises(Unauthorized):
             qgis_server.download_project(Test.MOCK_PROJECT['id'])
 
-        with self.assertRaises(BadCredentials):
+        with self.assertRaises(Unauthorized):
             qgis_server.upload_project(
                 Test.MOCK_PROJECT['id'],
                 Test.MOCK_PROJECT['name'],

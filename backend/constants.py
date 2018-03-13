@@ -4,12 +4,12 @@ File that contains the list of constants of the backend.
 """
 
 
-class Oauth:
+class OAuth:
     """
     Contains Oauth2 constants.
     """
     PATH = 'o/token/'
-    BAD_CREDENTIALS = 401
+    UNAUTHORIZED = 401
 
 
 class Api:
@@ -18,7 +18,7 @@ class Api:
     """
     PATH = 'api/v1/'
     PROJECTS = 'qgisserver/project/'
-    BAD_CREDENTIALS = 401
+    UNAUTHORIZED = 401
 
 
 class Vault:
