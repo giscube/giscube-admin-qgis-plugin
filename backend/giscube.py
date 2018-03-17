@@ -16,14 +16,14 @@ class Giscube:
     Giscube API client.
     Handles the login and recived token. It can be saved in a vault.
     """
-    KEYRING_NAME = "giscube-admin-qgis-plugin"
+    KEYRING_PREFIX = "giscube-admin-qgis-plugin-"
 
     def __init__(
             self,
             server_url,
             client_id,
             save_tokens=True,
-            keyring_name=None):
+            name=''):
         """
         Contructor. Loads, if enabled, the saved tokens.
         :param server_url: Used server service URL
@@ -42,12 +42,20 @@ class Giscube:
         self.__qgis_server = None
 
         self._save = save_tokens
-        if keyring_name is not None:
-            self._keyring_client_name = keyring_name
-        else:
-            self._keyring_client_name = self.KEYRING_NAME
+        self.__name = name
+        self._keyring_client_name = self.KEYRING_PREFIX + name
 
         self.__load_tokens()
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def set_name(self, name):
+        self.delete_saved()
+        self.__name = name
+        self.__save_tokens()
 
     @property
     def qgis_server(self):
