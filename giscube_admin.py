@@ -8,13 +8,13 @@ import os.path
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
-# Initialize Qt resources from file resources.py
-from .resources import *
 
-# Import the code for the DockWidget
+from .settings import Settings
+# Import the GUI classes
 from .giscube_admin_dockwidget import GiscubeAdminDockWidget
-from .giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
 from .giscube_admin_login_dialog import GiscubeAdminLoginDialog
+# Initialize Qt resources from file resources.py
+from .resources import *  # NOQA
 
 
 class GiscubeAdmin:
@@ -34,13 +34,8 @@ class GiscubeAdmin:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
 
-        # initialize settings (with defaults)
-        self.settings = QSettings(
-            'Microdisseny Giscube SLU',
-            'giscube-admin-qgis-plugin')
-
-        if not self.settings.contains('config/url'):
-            self.settings.setValue('config/url', 'https://giscube.com/')
+        # initialize and load settings
+        self.settings = Settings()
 
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
@@ -166,7 +161,7 @@ class GiscubeAdmin:
         self.add_action(
             icon_path,
             text=self.tr(u'Configure Giscube Admin'),
-            callback=self.configure,
+            callback=self.settings.edit_popup,
             parent=self.iface.mainWindow(),
             add_to_toolbar=False)
 
@@ -214,16 +209,6 @@ class GiscubeAdmin:
             # show the dockwidget
             self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
-
-    def configure(self):
-            """Configure method that makes a popup to configure the plugin"""
-            # make and execute dialog
-            dialog = GiscubeAdminConfigureDialog(
-                self.settings.value('config/url'))
-
-            if dialog.exec_():
-                # Save the new settings (if the user clicks to save)
-                self.settings.setValue('config/url', dialog.url.text())
 
     def new_server_popup(self):
         dialog = GiscubeAdminLoginDialog()
