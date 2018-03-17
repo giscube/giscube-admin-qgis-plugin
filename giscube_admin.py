@@ -3,6 +3,8 @@
 This script contains GiscubeAdmin: the plugin's main class.
 """
 
+import os.path
+
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
@@ -12,7 +14,7 @@ from .resources import *
 # Import the code for the DockWidget
 from .giscube_admin_dockwidget import GiscubeAdminDockWidget
 from .giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
-import os.path
+from .giscube_admin_login_dialog import GiscubeAdminLoginDialog
 
 
 class GiscubeAdmin:
@@ -204,7 +206,7 @@ class GiscubeAdmin:
             #    removed on close (see self.onClosePlugin method)
             if self.dockwidget is None:
                 # Create the dockwidget (after translation) and keep reference
-                self.dockwidget = GiscubeAdminDockWidget()
+                self.dockwidget = GiscubeAdminDockWidget(self)
 
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
@@ -222,3 +224,8 @@ class GiscubeAdmin:
             if dialog.exec_():
                 # Save the new settings (if the user clicks to save)
                 self.settings.setValue('config/url', dialog.url.text())
+
+    def new_server_popup(self):
+        dialog = GiscubeAdminLoginDialog()
+        if dialog.exec_():
+            pass  # TODO
