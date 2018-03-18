@@ -20,16 +20,16 @@ class Settings:
         """
         dialog = GiscubeAdminConfigureDialog(self)
         if dialog.exec_():
-            print(dialog.save_tokens.isChecked())
-            self.save_tokens = dialog.save_tokens.isChecked()
+            print(dialog.save_connections.isChecked())
+            self.save_connections = dialog.save_connections.isChecked()
 
     @property
-    def save_tokens(self):
+    def save_connections(self):
         """
         Points if the new tokens should be saved.
         """
-        return self.__settings.value('save_tokens', True, bool)
+        return self.__settings.value('save_connections', True, bool)
 
-    @save_tokens.setter
-    def save_tokens(self, v):
-        return self.__settings.setValue('save_tokens', v)
+    @save_connections.setter
+    def save_connections(self, v):
+        return self.__settings.setValue('save_connections', v)

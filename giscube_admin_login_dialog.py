@@ -55,7 +55,7 @@ class GiscubeAdminLoginDialog(QtWidgets.QDialog, FORM_CLASS):
             url,
             self.client_id,
             name=name,
-            save_tokens=self.giscube_admin.settings.save_tokens)
+            save_tokens=self.giscube_admin.settings.save_connections)
 
         try:
             if not conn.login(username, password):
