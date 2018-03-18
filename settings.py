@@ -5,6 +5,8 @@ This script contains the plugin's settings logic and defaults.
 
 from PyQt5.QtCore import QSettings
 
+from .giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
+
 
 class Settings:
     def __init__(self):
@@ -16,7 +18,10 @@ class Settings:
         """
         Executes a popup that allows to modify the settings.
         """
-        pass
+        dialog = GiscubeAdminConfigureDialog(self)
+        if dialog.exec_():
+            print(dialog.save_tokens.isChecked())
+            self.save_tokens = dialog.save_tokens.isChecked()
 
     @property
     def save_tokens(self):
@@ -26,5 +31,5 @@ class Settings:
         return self.__settings.value('save_tokens', True, bool)
 
     @save_tokens.setter
-    def set_save_tokens(self, v):
+    def save_tokens(self, v):
         return self.__settings.setValue('save_tokens', v)
