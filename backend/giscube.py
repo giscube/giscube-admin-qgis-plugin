@@ -52,7 +52,7 @@ class Giscube:
         return self.__name
 
     @name.setter
-    def set_name(self, name):
+    def name(self, name):
         self.delete_saved()
         self.__name = name
         self.__save_tokens()
