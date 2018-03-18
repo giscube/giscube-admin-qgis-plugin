@@ -51,7 +51,12 @@ class GiscubeAdminLoginDialog(QtWidgets.QDialog, FORM_CLASS):
         username = self.username.text()
         password = self.password.text()
 
-        conn = Giscube(url, self.client_id, name=name, save_tokens=False)
+        conn = Giscube(
+            url,
+            self.client_id,
+            name=name,
+            save_tokens=self.giscube_admin.settings.save_tokens)
+
         try:
             if not conn.login(username, password):
                 self.error.setText('Wrong credentials or server URL. '
