@@ -5,13 +5,14 @@ the logging credentials.
 """
 
 import os
+from requests.exceptions import ConnectionError
 
 from PyQt5 import QtWidgets, uic
 
 from .backend import Giscube
 from .backend.utils import is_url_valid
 
-from requests.exceptions import ConnectionError
+from .server_item import ServerItem
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'giscube_admin_login_dialog_base.ui'))
@@ -23,7 +24,7 @@ class GiscubeAdminLoginDialog(QtWidgets.QDialog, FORM_CLASS):
         """Constructor."""
         super(GiscubeAdminLoginDialog, self).__init__(parent)
 
-        self.conns = giscube_admin.conns
+        self.giscube_admin = giscube_admin
         self.client_id = giscube_admin.CLIENT_ID
 
         # Set up the user interface from Designer.
@@ -36,7 +37,7 @@ class GiscubeAdminLoginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.error.setText('')
 
         name = self.name.text()
-        if name in self.conns:
+        if name in self.giscube_admin.server_names():
             self.error.setText('There already is a server with this name. '
                                'Please, choose another one.')
             return
@@ -66,5 +67,8 @@ class GiscubeAdminLoginDialog(QtWidgets.QDialog, FORM_CLASS):
                                'Full exception: ' + str(e))
             return
 
-        self.conns[name] = conn
+        server = ServerItem(name, conn, self.giscube_admin.servers)
+        self.giscube_admin.servers.addTopLevelItem(server)
+        server.setupUI()
+
         self.accept()

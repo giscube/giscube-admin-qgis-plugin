@@ -21,7 +21,7 @@ class GiscubeAdmin:
     """QGIS Plugin Implementation."""
 
     # Plugin's client ID
-    CLIENT_ID = ''
+    CLIENT_ID = 'omBayn3JMTuFBuErZWPA4o2NgeJlqlCa6cP4dxxY'
 
     def __init__(self, iface):
         """Constructor.
@@ -32,7 +32,7 @@ class GiscubeAdmin:
         :type iface: QgsInterface
         """
 
-        self.conns = {}
+        self.servers = None
 
         # Save reference to the QGIS interface
         self.iface = iface
@@ -65,6 +65,15 @@ class GiscubeAdmin:
 
         self.pluginIsActive = False
         self.dockwidget = None
+
+    def server_names(self):
+        """
+        Names of the currently connected servers.
+        """
+        r = []
+        for i in range(self.servers.topLevelItemCount()):
+            r.append(self.servers.topLevelItem(i).name)
+        return r
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -209,6 +218,8 @@ class GiscubeAdmin:
                 # Create the dockwidget (after translation) and keep reference
                 self.dockwidget = GiscubeAdminDockWidget(self)
 
+                self.servers = self.dockwidget.servers
+
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
 
@@ -221,5 +232,4 @@ class GiscubeAdmin:
         Opens a new server dialog.
         """
         dialog = GiscubeAdminLoginDialog(self, parent=self.dockwidget)
-        if dialog.exec_():
-            pass  # TODO Update UI
+        dialog.exec_()
