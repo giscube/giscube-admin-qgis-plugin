@@ -20,6 +20,9 @@ from .resources import *  # NOQA
 class GiscubeAdmin:
     """QGIS Plugin Implementation."""
 
+    # Plugin's client ID
+    CLIENT_ID = ''
+
     def __init__(self, iface):
         """Constructor.
 
@@ -28,6 +31,9 @@ class GiscubeAdmin:
             application at run time.
         :type iface: QgsInterface
         """
+
+        self.conns = {}
+
         # Save reference to the QGIS interface
         self.iface = iface
 
@@ -211,6 +217,9 @@ class GiscubeAdmin:
             self.dockwidget.show()
 
     def new_server_popup(self):
-        dialog = GiscubeAdminLoginDialog()
+        """
+        Opens a new server dialog.
+        """
+        dialog = GiscubeAdminLoginDialog(self, parent=self.dockwidget)
         if dialog.exec_():
-            pass  # TODO
+            pass  # TODO Update UI
