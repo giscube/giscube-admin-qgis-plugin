@@ -9,10 +9,16 @@ from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
+from .backend import Giscube
+
 from .settings import Settings
+from .connections_saver import ConnectionsSaver
+
 # Import the GUI classes
+from .server_item import ServerItem
 from .giscube_admin_dockwidget import GiscubeAdminDockWidget
 from .giscube_admin_login_dialog import GiscubeAdminLoginDialog
+
 # Initialize Qt resources from file resources.py
 from .resources import *  # NOQA
 
@@ -33,6 +39,7 @@ class GiscubeAdmin:
         """
 
         self.servers = None
+        self.servers_saver = ConnectionsSaver()
 
         # Save reference to the QGIS interface
         self.iface = iface
@@ -215,10 +222,7 @@ class GiscubeAdmin:
             #    first run of plugin
             #    removed on close (see self.onClosePlugin method)
             if self.dockwidget is None:
-                # Create the dockwidget (after translation) and keep reference
-                self.dockwidget = GiscubeAdminDockWidget(self)
-
-                self.servers = self.dockwidget.servers
+                self.make_dockwidget()
 
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
@@ -227,9 +231,42 @@ class GiscubeAdmin:
             self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
 
+    def make_dockwidget(self):
+        """
+        Makes and configures the plugin to make the dockwidget.
+        """
+        # Create the dockwidget (after translation) and keep reference
+        self.dockwidget = GiscubeAdminDockWidget(self)
+
+        self.servers = self.dockwidget.servers
+
+        for conn in self.servers_saver.connections:
+            name, url = conn
+            giscube = Giscube(
+                url,
+                self.CLIENT_ID,
+                name=name,
+                save_tokens=self.settings.save_connections)
+
+            if giscube.has_access_token:
+                server = ServerItem(name, giscube, self.servers)
+                self.servers.addTopLevelItem(server)
+                server.setupUI()
+
     def new_server_popup(self):
         """
         Opens a new server dialog.
         """
         dialog = GiscubeAdminLoginDialog(self, parent=self.dockwidget)
-        dialog.exec_()
+        if dialog.exec_() and self.settings.save_connections:
+            self.__save_connections()
+
+    def __save_connections(self):
+        """
+        Saves the connections to the different servers.
+        """
+        conns = []
+        for i in range(self.servers.topLevelItemCount()):
+            conn = self.servers.topLevelItem(i).giscube_conn
+            conns.append((conn.name, conn.server_url))
+        self.servers_saver.connections = conns

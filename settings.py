@@ -9,10 +9,15 @@ from .giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
 
 
 class Settings:
+    ORGANIZATION = 'Microdisseny Giscube SLU'
+    PROJECT = 'giscube-admin-qgis-plugin'
+
+    SETTINGS_PREFIX = 'setting/'
+
     def __init__(self):
         self.__settings = QSettings(
-            'Microdisseny Giscube SLU',
-            'giscube-admin-qgis-plugin')
+            self.ORGANIZATION,
+            self.PROJECT)
 
     def edit_popup(self):
         """
@@ -20,7 +25,6 @@ class Settings:
         """
         dialog = GiscubeAdminConfigureDialog(self)
         if dialog.exec_():
-            print(dialog.save_connections.isChecked())
             self.save_connections = dialog.save_connections.isChecked()
 
     @property
@@ -28,8 +32,13 @@ class Settings:
         """
         Points if the new tokens should be saved.
         """
-        return self.__settings.value('save_connections', True, bool)
+        return self.__settings.value(
+            self.SETTINGS_PREFIX + 'save_connections',
+            True,
+            bool)
 
     @save_connections.setter
-    def save_connections(self, v):
-        return self.__settings.setValue('save_connections', v)
+    def save_connections(self, value):
+        return self.__settings.setValue(
+            self.SETTINGS_PREFIX + 'save_connections',
+            value)
