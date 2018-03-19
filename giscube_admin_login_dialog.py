@@ -12,6 +12,7 @@ from PyQt5 import QtWidgets, uic
 from .backend import Giscube
 from .backend.utils import is_url_valid
 
+from .main_master import master
 from .server_item import ServerItem
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -72,7 +73,7 @@ class GiscubeAdminLoginDialog(QtWidgets.QDialog, FORM_CLASS):
                                'Full exception: ' + str(e))
             return
 
-        server = ServerItem(name, conn, self.giscube_admin.servers)
+        server = ServerItem(name, conn, self.giscube_admin.servers, master)
         self.giscube_admin.servers.addTopLevelItem(server)
         server.setupUI()
 

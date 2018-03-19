@@ -5,13 +5,15 @@ This script contains Server: The instance of the server UI.
 
 from PyQt5.QtWidgets import QTreeWidgetItem, QPushButton
 
+from .async import Job
 from .project_item import ProjectItem
 
 
 class ServerItem(QTreeWidgetItem):
-    def __init__(self, name, conn, root):
+    def __init__(self, name, conn, root, slave_master):
         super(ServerItem, self).__init__()
 
+        self.slave_master = slave_master
         self.name = name
         self.giscube_conn = conn
         self.root = root
@@ -22,8 +24,17 @@ class ServerItem(QTreeWidgetItem):
         self.new_project = QPushButton('New Project')
         self.root.setItemWidget(self, 1, self.new_project)
 
-        projects = self.giscube_conn.qgis_server.projects()
+        self.slave_master.list_job(SetupProjectsJob(self))
+
+
+class SetupProjectsJob(Job):
+    def __init__(self, si):
+        super(SetupProjectsJob, self).__init__()
+        self.si = si
+
+    def work(self):
+        projects = self.si.giscube_conn.qgis_server.projects()
         for pid, name in projects.items():
-            project = ProjectItem(pid, name, self.root)
-            self.addChild(project)
+            project = ProjectItem(pid, name, self.si.root)
+            self.si.addChild(project)
             project.setupUI()

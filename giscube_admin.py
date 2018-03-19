@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import QAction
 
 from .backend import Giscube
 
+from .main_master import master
+
 from .settings import Settings
 from .connections_saver import ConnectionsSaver
 
@@ -249,7 +251,7 @@ class GiscubeAdmin:
                 save_tokens=self.settings.save_connections)
 
             if giscube.has_access_token:
-                server = ServerItem(name, giscube, self.servers)
+                server = ServerItem(name, giscube, self.servers, master)
                 self.servers.addTopLevelItem(server)
                 server.setupUI()
 
