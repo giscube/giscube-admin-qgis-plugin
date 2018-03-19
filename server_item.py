@@ -10,10 +10,10 @@ from .project_item import ProjectItem
 
 
 class ServerItem(QTreeWidgetItem):
-    def __init__(self, name, conn, root, slave_master):
+    def __init__(self, name, conn, root, company):
         super(ServerItem, self).__init__()
 
-        self.slave_master = slave_master
+        self.company = company
         self.name = name
         self.giscube_conn = conn
         self.root = root
@@ -24,7 +24,7 @@ class ServerItem(QTreeWidgetItem):
         self.new_project = QPushButton('New Project')
         self.root.setItemWidget(self, 1, self.new_project)
 
-        self.slave_master.list_job(SetupProjectsJob(self))
+        self.company.list_job(SetupProjectsJob(self))
 
 
 class SetupProjectsJob(Job):

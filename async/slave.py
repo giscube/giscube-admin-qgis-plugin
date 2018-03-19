@@ -6,7 +6,6 @@ thread.
 
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
-from .company import Company
 from .job import Job
 
 
@@ -24,12 +23,6 @@ class Slave(QThread):
         :param job: An inital job to be done.
         :type job:  .async.Job
         """
-        if type(company) is not Company:
-            raise TypeError("The argument company must be of type"
-                            ".async.Company")
-        if type(job) is not Job:
-            raise TypeError("The argument company must be of type"
-                            ".async.Job")
 
         super(Slave, self).__init__()
         self.company = company

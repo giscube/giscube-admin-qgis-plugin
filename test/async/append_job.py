@@ -13,6 +13,6 @@ class AppendJob(Job):
         self.list = l
         self.value = value
 
-    def work(self):
+    def do_work(self):
         time.sleep(1)
         self.list.append(self.value)

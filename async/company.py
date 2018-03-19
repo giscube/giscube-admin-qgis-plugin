@@ -52,10 +52,6 @@ class Company:
         :param job: Job that contains the work to be done.
         :type job:  .async.Job
         """
-        if type(job) is not Job:
-            raise TypeError("The argument job must be of type"
-                            ".async.Job")
-
         self._mutex.lock()
         if len(self._slaves) < self._max_slaves:
                 slave = Slave(self, job)
@@ -71,10 +67,6 @@ class Company:
         :param slave: Slave that will do the job.
         :type slave:  .async.Slave
         """
-        if type(slave) is not Slave:
-            raise TypeError("The argument slave must be of type"
-                            ".async.Slave")
-
         self._mutex.lock()
         if len(self._jobs) > 0:
             job = self._jobs.pop()

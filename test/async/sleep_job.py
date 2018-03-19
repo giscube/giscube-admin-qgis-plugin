@@ -13,5 +13,5 @@ class SleepJob(Job):
         super(SleepJob, self).__init__()
         self.t = t
 
-    def work(self):
+    def do_work(self):
         time.sleep(self.t)
