@@ -11,23 +11,23 @@ class Slave(QThread):
     """
     Performs jobs. It's its own thread.
     """
-    def __init__(self, pool, job):
+    def __init__(self, master, job):
         super(Slave, self).__init__()
-        self.pool = pool
+        self.master = master
         self.job = job
+
+        self.finished.connect(lambda: master.free_slave(self))
 
     def run(self):
         """
         Start working.
         """
         if self.job is None:
-            self.pool.free_worker()
+            return
 
         while True:
             self.job.work()
 
-            self.job = self.pool.aquire_job()
+            self.job = self.master.aquire_job(self)
             if self.job is None:
-                break
-
-        self.pool.free_worker()
+                return

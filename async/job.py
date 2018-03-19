@@ -16,7 +16,7 @@ class Job:
         """
         self.priority = priority
 
-    def work(self, worker):
+    def work(self):
         """
         Does the job itself. Override to make a job do something.
         """
