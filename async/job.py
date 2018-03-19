@@ -12,17 +12,17 @@ class Job:
         """
         Contructor.
         :param priority: Priority of the job.
-        :type priority: float
+        :type priority:  float
         """
         self.priority = priority
 
-    def work(self):
+    def do_work(self):
         """
         Does the job itself. Override to make a job do something.
         """
         pass
 
-    def apply(self):
+    def apply_result(self):
         """
         After the job is done, apply the result in the main thread.
         Normally used to update GUI.
