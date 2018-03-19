@@ -33,10 +33,10 @@ class SetupProjectsJob(Job):
         self.si = si
         self.projects = None
 
-    def work(self):
+    def do_work(self):
         self.projects = self.si.giscube_conn.qgis_server.projects()
 
-    def apply(self):
+    def apply_result(self):
         for pid, name in self.projects.items():
             project = ProjectItem(pid, name, self.si.root)
             self.si.addChild(project)
