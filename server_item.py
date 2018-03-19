@@ -31,10 +31,13 @@ class SetupProjectsJob(Job):
     def __init__(self, si):
         super(SetupProjectsJob, self).__init__()
         self.si = si
+        self.projects = None
 
     def work(self):
-        projects = self.si.giscube_conn.qgis_server.projects()
-        for pid, name in projects.items():
+        self.projects = self.si.giscube_conn.qgis_server.projects()
+
+    def apply(self):
+        for pid, name in self.projects.items():
             project = ProjectItem(pid, name, self.si.root)
             self.si.addChild(project)
             project.setupUI()

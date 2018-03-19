@@ -21,3 +21,10 @@ class Job:
         Does the job itself. Override to make a job do something.
         """
         pass
+
+    def apply(self):
+        """
+        After the job is done, apply the result in the main thread.
+        Normally used to update GUI.
+        """
+        pass
