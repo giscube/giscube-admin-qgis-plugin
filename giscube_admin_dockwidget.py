@@ -9,6 +9,8 @@ import os
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtCore import pyqtSignal
 
+from .tree_controller import TreeController
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'giscube_admin_dockwidget_base.ui'))
 
@@ -23,6 +25,8 @@ class GiscubeAdminDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Set up the user interface from Designer.
         self.setupUi(self)
+
+        self.tree_controller = TreeController(self.servers)
 
         # Add signals and slots connections
         self.new_server.clicked.connect(plugin.new_server_popup)

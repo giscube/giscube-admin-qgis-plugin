@@ -38,6 +38,6 @@ class SetupProjectsJob(Job):
 
     def apply_result(self):
         for pid, name in self.projects.items():
-            project = ProjectItem(pid, name, self.si.root)
+            project = ProjectItem(pid, name, self.si.root, self.giscube_conn)
             self.si.addChild(project)
             project.setupUI()
