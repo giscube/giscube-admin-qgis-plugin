@@ -17,9 +17,9 @@ from .settings import Settings
 from .connections_saver import ConnectionsSaver
 
 # Import the GUI classes
-from .server_item import ServerItem
 from .giscube_admin_dockwidget import GiscubeAdminDockWidget
-from .giscube_admin_login_dialog import GiscubeAdminLoginDialog
+from .server_tree.server_item import ServerItem
+from .server_tree.new_server_dialog import NewServerDialog
 
 # Initialize Qt resources from file resources.py
 from .resources import *  # NOQA
@@ -259,14 +259,25 @@ class GiscubeAdmin:
         """
         Opens a new server dialog.
         """
-        dialog = GiscubeAdminLoginDialog(self, parent=self.dockwidget)
-        if dialog.exec_() and self.settings.save_connections:
-            self.__save_connections()
+        dialog = NewServerDialog(self.dockwidget)
+        if dialog.exec_():
+            result = dialog.values()
+            new_conn = Giscube(
+                result['url'],
+                self.CLIENT_ID,
+                False,
+                result['name'],
+            )
+            ServerItem(
+                new_conn,
+                self.dockwidget.servers,
+            )
 
     def __save_connections(self):
         """
         Saves the connections to the different servers.
         """
+        return
         conns = []
         for i in range(self.servers.topLevelItemCount()):
             conn = self.servers.topLevelItem(i).giscube_conn

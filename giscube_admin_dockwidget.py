@@ -25,6 +25,7 @@ class GiscubeAdminDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Set up the user interface from Designer.
         self.setupUi(self)
+        self.servers.setColumnWidth(0, 210)
 
         self.tree_controller = TreeController(self.servers)
 

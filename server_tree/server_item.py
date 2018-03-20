@@ -9,7 +9,7 @@ from .loading_item import LoadingItem
 
 
 class ServerItem(QTreeWidgetItem):
-    def __init__(self, name, conn, tree_widget):
+    def __init__(self, conn, tree_widget):
         super().__init__()
 
         self._giscube_conn = conn

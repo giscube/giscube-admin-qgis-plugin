@@ -8,12 +8,12 @@ import os
 from PyQt5 import QtWidgets, uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'login_dialog_base.ui'))
+    os.path.dirname(__file__), 'new_server_dialog_base.ui'))
 
 
 class NewServerDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
 
         self.setupUi(self)
 
