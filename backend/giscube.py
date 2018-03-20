@@ -179,6 +179,16 @@ class Giscube:
 
         return True
 
+    @property
+    def save_tokens(self):
+        return self._save
+
+    @save_tokens.setter
+    def save_tokens(self, v):
+        self.delete_saved()
+        self._save = (v is True)
+        self.__save_tokens()
+
     def __load_tokens(self):
         """
         Loads the tokens from a safe place.
