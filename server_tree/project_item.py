@@ -15,7 +15,10 @@ class ProjectItem(QTreeWidgetItem):
 
         self.id = id
         self.name = name
+        self.path = None
+
         self.server_item = server_item
+        self.qgis_server = self.server_item.giscube.qgis_server
         self.iface = server_item.iface
 
         server_item.addChild(self)
@@ -23,10 +26,23 @@ class ProjectItem(QTreeWidgetItem):
 
     def double_clicked(self):
         def open_project():
-            qgis_server = self.server_item.giscube.qgis_server
-            path = qgis_server.download_project(self.id)
             project = QgsProject.instance()
-            project.read(path)
+            self.path = self.qgis_server.download_project(self.id)
+            project.read(self.path)
+            project.readProject.connect(close_project)
+            project.projectSaved.connect(save_project)
+
+        def save_project():
+            self.qgis_server.upload_project(
+                self.id,
+                self.name,
+                self.path,
+            )
+
+        def close_project():
+            project = QgsProject.instance()
+            project.readProject.disconnect(close_project)
+            project.projectSaved.disconnect(save_project)
 
         self.iface.newProjectCreated.connect(
             open_project,
