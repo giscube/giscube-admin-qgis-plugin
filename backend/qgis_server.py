@@ -186,7 +186,8 @@ class QgisServer:
                 'access_token': self.__giscube.access_token,
             },
             data={
-                'title': title,
+                'id': project_id,
+                'name': title,
                 'data': qgis_project,
             }
         )
