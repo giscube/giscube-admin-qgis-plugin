@@ -4,8 +4,10 @@ Package containing all the classes and utilities to communicate with the
 Giscube server.
 """
 
-from PyQt5.QtCore import QDir
+import time
 import requests
+
+from PyQt5.QtCore import QDir
 
 from .constants import Api
 from .exceptions import Unauthorized
@@ -60,7 +62,10 @@ class QgisServer:
 
         response = self.__get_result(self.__request_project, project_id)
 
-        path = QDir.tempPath() + '/qgis-admin-project-'+str(project_id)+'.qgs'
+        t = '{:.0f}'.format(time.time())
+        path = QDir.tempPath() + (
+            '/qgis-admin-project-'+str(project_id)+'-'+t+'.qgs'
+        )
         with open(path, 'w') as f:
             if 'data' in response:
                 f.write(response['data'])
