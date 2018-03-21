@@ -193,7 +193,7 @@ class Giscube:
         """
         Loads the tokens from a safe place.
         """
-        if not self._save:
+        if self.__access_token is not None and not self._save:
             return
 
         self.__access_token = keyring.get_password(

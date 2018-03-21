@@ -242,18 +242,14 @@ class GiscubeAdmin:
 
         self.servers = self.dockwidget.servers
 
-        for conn in self.servers_saver.connections:
-            name, url = conn
-            giscube = Giscube(
-                url,
+        for name in ServerItem.saved_servers.childGroups():
+            conn = Giscube(
+                ServerItem.saved_servers.value(name+'/url'),
                 self.CLIENT_ID,
-                name=name,
-                save_tokens=self.settings.save_connections)
-
-            if giscube.has_access_token:
-                server = ServerItem(name, giscube, self.servers, main_company)
-                self.servers.addTopLevelItem(server)
-                server.setupUI()
+                False,
+                name,
+            )
+            ServerItem(conn, self.servers)
 
     def new_server_popup(self):
         """
@@ -277,7 +273,7 @@ class GiscubeAdmin:
         """
         Saves the connections to the different servers.
         """
-        return
+        return  # TODO save the servers the new way
         conns = []
         for i in range(self.servers.topLevelItemCount()):
             conn = self.servers.topLevelItem(i).giscube_conn
