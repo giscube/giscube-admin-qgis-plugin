@@ -4,15 +4,20 @@ This script contains the class TreeController: controlls the behavior of the
 items in the dock tree.
 """
 
-from .project_item import ProjectItem
+from .server_tree.server_item import ServerItem
+# from .server_tree.project_item import ProjectItem
 
 
 class TreeController:
     def __init__(self, tree):
         self.tree = tree
 
-        def double_clicked(item):
-            if isinstance(item, ProjectItem):
-                item.double_clicked()
+        def expanded(item):
+            if isinstance(item, ServerItem):
+                item.expanded()
+        tree.itemExpanded.connect(expanded)
 
-        tree.itemDoubleClicked.connect(double_clicked)
+        # def double_clicked(item):
+        #     if isinstance(item, ProjectItem):
+        #         item.double_clicked()
+        # tree.itemDoubleClicked.connect(double_clicked)
