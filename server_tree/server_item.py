@@ -25,10 +25,11 @@ class ServerItem(QTreeWidgetItem):
         Settings.PROJECT + '-servers',
     )
 
-    def __init__(self, conn, tree):
+    def __init__(self, conn, tree, iface):
         super().__init__()
 
-        print(conn.server_url)
+        self.iface = iface
+
         self.giscube = conn
         self._tree = tree
 

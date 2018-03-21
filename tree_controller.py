@@ -5,7 +5,7 @@ items in the dock tree.
 """
 
 from .server_tree.server_item import ServerItem
-# from .server_tree.project_item import ProjectItem
+from .server_tree.project_item import ProjectItem
 
 
 class TreeController:
@@ -17,7 +17,7 @@ class TreeController:
                 item.expanded()
         tree.itemExpanded.connect(expanded)
 
-        # def double_clicked(item):
-        #     if isinstance(item, ProjectItem):
-        #         item.double_clicked()
-        # tree.itemDoubleClicked.connect(double_clicked)
+        def double_clicked(item):
+            if isinstance(item, ProjectItem):
+                item.double_clicked()
+        tree.itemDoubleClicked.connect(double_clicked)

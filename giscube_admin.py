@@ -249,7 +249,7 @@ class GiscubeAdmin:
                 False,
                 name,
             )
-            ServerItem(conn, self.servers)
+            ServerItem(conn, self.servers, self.iface)
 
     def new_server_popup(self):
         """
@@ -267,6 +267,7 @@ class GiscubeAdmin:
             ServerItem(
                 new_conn,
                 self.dockwidget.servers,
+                self.iface,
             )
 
     def __save_connections(self):
