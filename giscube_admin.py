@@ -11,8 +11,6 @@ from PyQt5.QtWidgets import QAction
 
 from .backend import Giscube
 
-from .main_company import main_company
-
 from .settings import Settings
 from .connections_saver import ConnectionsSaver
 
@@ -269,14 +267,3 @@ class GiscubeAdmin:
                 self.dockwidget.servers,
                 self.iface,
             )
-
-    def __save_connections(self):
-        """
-        Saves the connections to the different servers.
-        """
-        return  # TODO save the servers the new way
-        conns = []
-        for i in range(self.servers.topLevelItemCount()):
-            conn = self.servers.topLevelItem(i).giscube_conn
-            conns.append((conn.name, conn.server_url))
-        self.servers_saver.connections = conns
