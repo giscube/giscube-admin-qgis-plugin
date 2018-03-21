@@ -11,6 +11,7 @@ from ..main_company import main_company
 from ..backend import Unauthorized
 
 from .loading_item import LoadingItem
+from .project_item import ProjectItem
 
 from .login_dialog import LoginDialog
 
@@ -19,7 +20,7 @@ class ServerItem(QTreeWidgetItem):
     def __init__(self, conn, tree):
         super().__init__()
 
-        self._giscube_conn = conn
+        self.giscube = conn
         self._tree = tree
 
         tree.addTopLevelItem(self)
@@ -33,37 +34,37 @@ class ServerItem(QTreeWidgetItem):
 
     @property
     def name(self):
-        return self._giscube_conn.name
+        return self.giscube.name
 
     @property
     def server_url(self):
-        self._giscube_conn.server_url
+        self.giscube.server_url
 
     @property
     def save_tokens(self):
-        self._giscube_conn.save_tokens
+        self.giscube.save_tokens
 
     def expanded(self):
         if self.childCount() == 1 and isinstance(self.child(0), LoadingItem):
-            if not self._giscube_conn.is_logged_in:
+            if not self.giscube.is_logged_in:
                 self._login_popup()
 
             main_company.list_job(ListProjectsJob(self))
 
     def _login_popup(self):
         while True:
-            dialog = LoginDialog()
+            dialog = LoginDialog(self.treeWidget())
             if not dialog.exec_():
                 self._tree.collapseItem(self)
                 return
 
             result = dialog.values()
-            self._giscube_conn.save_tokens = False
+            self.giscube.save_tokens = False
             try:
-                if self._giscube_conn.login(
+                if self.giscube.login(
                         result['username'],
                         result['password']):
-                    self._giscube_conn.save_tokens = result['save_tokens']
+                    self.giscube.save_tokens = result['save_tokens']
                     break
             except:
                 pass  # TODO Detect error and show message
@@ -78,13 +79,16 @@ class ListProjectsJob(Job):
 
     def do_work(self):
         try:
-            self.projects = self.si._giscube_conn.qgis_server.projects()
+            self.projects = self.si.giscube.qgis_server.projects()
             self.succeded = True
         except Unauthorized:
             pass  # TODO do message?
 
     def apply_result(self):
         if self.succeded:
-            pass  # TODO update UI
+            self.si.takeChildren()
+            for pid, name in self.projects.items():
+                ProjectItem(pid, name, self.si)
         else:
             self.si._login_popup()
+            main_company.list_job(self)

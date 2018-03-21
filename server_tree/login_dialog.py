@@ -12,8 +12,8 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class LoginDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
 
         self.setupUi(self)
 
