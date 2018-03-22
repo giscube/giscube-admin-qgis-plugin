@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-This script contains the class Job: action to be done.
+This script contains the class Job.
 """
 
 
 class Job:
     """
-    Represents a job to be done.
+    Represents a job to be done. Override this class to do your own job.
     """
     def __init__(self, priority=0.0):
         """
@@ -18,13 +18,13 @@ class Job:
 
     def do_work(self):
         """
-        Does the job itself. Override to make a job do something.
+        Do the asynchronous job.
         """
         pass
 
     def apply_result(self):
         """
-        After the job is done, apply the result in the main thread.
+        Apply the results after the asynchronous job has been done.
         Normally used to update GUI.
         """
         pass

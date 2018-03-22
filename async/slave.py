@@ -45,6 +45,6 @@ class Slave(QThread):
             self.job.do_work()
             self._job_done.emit(self.job)
 
-            self.job = self.company.aquire_job(self)
+            self.job = self.company._aquire_job(self)
             if self.job is None:
                 return

@@ -12,6 +12,9 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class LoginDialog(QtWidgets.QDialog, FORM_CLASS):
+    """
+    Popup dialog that ask for the necessary data to login into a server.
+    """
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 

@@ -109,6 +109,16 @@ class Giscube:
         """
         return self.has_access_token
 
+    @property
+    def save_tokens(self):
+        return self._save
+
+    @save_tokens.setter
+    def save_tokens(self, v):
+        self.delete_saved()
+        self._save = (v is True)
+        self.__save_tokens()
+
     def login(self, user, password):
         """
         Requests a new token to the server. Returns if succeded.
@@ -179,15 +189,25 @@ class Giscube:
 
         return True
 
-    @property
-    def save_tokens(self):
-        return self._save
+    def delete_saved(self):
+        """
+        Deletes the locally saved tokens (if they are).
+        """
+        try:
+            keyring.delete_password(
+                self._keyring_client_name,
+                Vault.ACCESS_TOKEN_KEY,
+            )
+        except:
+            pass
 
-    @save_tokens.setter
-    def save_tokens(self, v):
-        self.delete_saved()
-        self._save = (v is True)
-        self.__save_tokens()
+        try:
+            keyring.delete_password(
+                self._keyring_client_name,
+                Vault.REFRESH_TOKEN_KEY,
+            )
+        except:
+            pass
 
     def __load_tokens(self):
         """
@@ -226,23 +246,3 @@ class Giscube:
                 Vault.REFRESH_TOKEN_KEY,
                 self.__refresh_token,
             )
-
-    def delete_saved(self):
-        """
-        Deletes the locally saved tokens (if they are).
-        """
-        try:
-            keyring.delete_password(
-                self._keyring_client_name,
-                Vault.ACCESS_TOKEN_KEY,
-            )
-        except:
-            pass
-
-        try:
-            keyring.delete_password(
-                self._keyring_client_name,
-                Vault.REFRESH_TOKEN_KEY,
-            )
-        except:
-            pass

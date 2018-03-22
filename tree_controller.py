@@ -14,10 +14,10 @@ class TreeController:
 
         def expanded(item):
             if isinstance(item, ServerItem):
-                item.expanded()
+                item._expanded()
         tree.itemExpanded.connect(expanded)
 
         def double_clicked(item):
             if isinstance(item, ProjectItem):
-                item.double_clicked()
+                item._double_clicked()
         tree.itemDoubleClicked.connect(double_clicked)

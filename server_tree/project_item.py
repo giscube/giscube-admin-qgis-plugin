@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script contains ProjectItem: The instance of a project UI.
+This script contains ProjectItem.
 """
 
 from PyQt5.QtCore import Qt
@@ -10,7 +10,14 @@ from qgis.core import QgsProject
 
 
 class ProjectItem(QTreeWidgetItem):
+    """
+    Server instance on the plugin's server tree UI.
+    Controlls the interaction with the user.
+    """
     def __init__(self, id, name, server_item):
+        """
+        Contructor.
+        """
         super().__init__()
 
         self.id = id
@@ -24,7 +31,7 @@ class ProjectItem(QTreeWidgetItem):
         server_item.addChild(self)
         self.setText(0, self.name)
 
-    def double_clicked(self):
+    def _double_clicked(self):
         def open_project():
             project = QgsProject.instance()
             self.path = self.qgis_server.download_project(self.id)

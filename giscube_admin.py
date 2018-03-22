@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import QAction
 from .backend import Giscube
 
 from .settings import Settings
-from .connections_saver import ConnectionsSaver
 
 # Import the GUI classes
 from .giscube_admin_dockwidget import GiscubeAdminDockWidget
@@ -39,7 +38,6 @@ class GiscubeAdmin:
         """
 
         self.servers = None
-        self.servers_saver = ConnectionsSaver()
 
         # Save reference to the QGIS interface
         self.iface = iface

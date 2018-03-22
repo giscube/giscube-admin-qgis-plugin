@@ -23,4 +23,3 @@ class GiscubeAdminConfigureDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
 
         # Set current values
-        self.save_connections.setChecked(settings.save_connections)

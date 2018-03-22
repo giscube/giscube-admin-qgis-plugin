@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-This script contains the class Company: gives the jobs to its slaves in
-descendent priority order.
+This script contains the class Company: manages the slaves and the available
+jobs.
 """
 
 from PyQt5.QtCore import QMutex
 
 from .slave import Slave
-from .job import Job
 
 
 class Company:
     """
-    Gives the jobs in priority order. Asyncronous safe.
+    Manages the creation Slaves as well as gives them the Jobs to work on.
     """
     def __init__(self, max_slaves=1):
         """
         Contructor.
-        :param max_slaves: The maximum number of slaves (working threads) want
+        :param max_slaves: The maximum number of slaves (working threads)
+        desired.
         :type max_slaves:  int
         """
         self._max_slaves = max_slaves
@@ -32,7 +32,7 @@ class Company:
     @property
     def max_slaves(self):
         """
-        The maximum number of slaves (working threads) want
+        The maximum number of slaves (working threads) that may be used.
         """
         self._mutex.lock()
         r = self.__max_slaves
@@ -48,7 +48,9 @@ class Company:
 
     def list_job(self, job):
         """
-        Lists a job that a slave can work with.
+        Lists a job. An Slave will work on it at when no higher priority jobs
+        are left (if two jobs have the same priority, the frist listed is
+        executed first).
         :param job: Job that contains the work to be done.
         :type job:  .async.Job
         """
@@ -61,9 +63,9 @@ class Company:
             self.__add(job)
         self._mutex.unlock()
 
-    def aquire_job(self, slave):
+    def _aquire_job(self, slave):
         """
-        A slave aquires a job to work with.
+        Aquire a job for an slave.
         :param slave: Slave that will do the job.
         :type slave:  .async.Slave
         """

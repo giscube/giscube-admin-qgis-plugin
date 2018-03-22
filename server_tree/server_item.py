@@ -15,17 +15,30 @@ from ..backend import Unauthorized
 
 from .loading_item import LoadingItem
 from .project_item import ProjectItem
-
 from .login_dialog import LoginDialog
 
 
 class ServerItem(QTreeWidgetItem):
+    """
+    Server instance on the plugin's server tree UI.
+    Controlls and keeps the information of the connection to the server and
+    handles the interaction with the user.
+    """
     saved_servers = QSettings(
         Settings.ORGANIZATION,
         Settings.PROJECT + '-servers',
     )
 
     def __init__(self, conn, tree, iface):
+        """
+        Contructor.
+        :param conn: The connection to the server.
+        :type  conn: ..backend.Giscube
+        :param tree: Widget that will contain this object.
+        :type  tree: PyQt5.QtWidgets.QTreeWidget
+        :param iface: QGIS interface object.
+        :type  iface: qgis.core.QgisInterface
+        """
         super().__init__()
 
         self.iface = iface
@@ -49,13 +62,16 @@ class ServerItem(QTreeWidgetItem):
 
     @property
     def name(self):
+        """
+        Name of the server.
+        """
         return self.giscube.name
 
     @property
     def server_url(self):
         self.giscube.server_url
 
-    def expanded(self):
+    def _expanded(self):
         if self.childCount() == 1 and isinstance(self.child(0), LoadingItem):
             if not self.giscube.is_logged_in:
                 if not self._login_popup():
@@ -85,13 +101,23 @@ class ServerItem(QTreeWidgetItem):
 
 
 class ListProjectsJob(Job):
+    """
+    Lists the projects of a ServerItem asynchronously.
+    """
     def __init__(self, si):
+        """
+        Contructor.
+        """
         super().__init__()
         self.si = si
         self.projects = None
         self.succeded = False
 
     def do_work(self):
+        """
+        Do the asynchronous job.
+        Reuests the server the list of projects.
+        """
         try:
             self.projects = self.si.giscube.qgis_server.projects()
             self.succeded = True
@@ -99,6 +125,10 @@ class ListProjectsJob(Job):
             pass  # TODO do message?
 
     def apply_result(self):
+        """
+        Apply the results after the asynchronous job has been done.
+        Updates the GUI.
+        """
         if self.succeded:
             self.si.takeChildren()
             for pid, name in self.projects.items():
