@@ -4,7 +4,7 @@ This script contains ServerItem: The instance of the server UI.
 """
 
 from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QTreeWidgetItem, QPushButton
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
 
 from ..settings import Settings
 
@@ -70,6 +70,37 @@ class ServerItem(QTreeWidgetItem):
     @property
     def server_url(self):
         self.giscube.server_url
+
+    def delete(self):
+        # Remove tokens and prevent saving them again
+        self.giscube.save_tokens = False
+
+        # Remove from configuration file
+        key = self.name+'/url'
+        if self.saved_servers.contains(key):
+            self.saved_servers.remove(key)
+            self.saved_servers.sync()
+
+        # Apply to GUI
+        index = self._tree.indexOfTopLevelItem(self)
+        self._tree.takeTopLevelItem(index)
+
+    def context_menu(self, pos):
+        menu = QMenu()
+
+        def refresh():
+            main_company.list_job(ListProjectsJob(self))
+        refresh_action = QAction('&Refresh projects')
+        menu.addAction(refresh_action)
+        refresh_action.triggered.connect(refresh)
+
+        def close():
+            self.delete()
+        close_action = QAction('&Close connection')
+        menu.addAction(close_action)
+        close_action.triggered.connect(close)
+
+        menu.exec_(pos)
 
     def _expanded(self):
         if self.childCount() == 1 and isinstance(self.child(0), LoadingItem):

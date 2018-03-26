@@ -14,3 +14,6 @@ class LoadingItem(QTreeWidgetItem):
         super().__init__()
 
         self.setText(0, 'Loading...')
+
+    def context_menu(self, pos):
+        pass

@@ -57,3 +57,6 @@ class ProjectItem(QTreeWidgetItem):
         self.iface.newProject(True)
         self.iface.newProjectCreated.disconnect(
             open_project)
+
+    def context_menu(self, pos):
+        pass

@@ -7,7 +7,7 @@ opens with the plugin.
 import os
 
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 
 from .tree_controller import TreeController
 
@@ -25,7 +25,9 @@ class GiscubeAdminDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Set up the user interface from Designer.
         self.setupUi(self)
+
         self.servers.setColumnWidth(0, 180)
+        self.servers.setContextMenuPolicy(Qt.CustomContextMenu)
 
         self.tree_controller = TreeController(self.servers)
 

@@ -12,6 +12,14 @@ class TreeController:
     def __init__(self, tree):
         self.tree = tree
 
+        def context_menu(pos):
+            item = self.tree.itemAt(pos)
+            if item is not None:
+                vp = self.tree.viewport()
+                global_pos = vp.mapToGlobal(pos)
+                item.context_menu(global_pos)
+        tree.customContextMenuRequested.connect(context_menu)
+
         def expanded(item):
             if isinstance(item, ServerItem):
                 item._expanded()

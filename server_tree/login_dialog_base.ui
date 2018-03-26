@@ -41,10 +41,13 @@
    <item>
     <widget class="QCheckBox" name="save_tokens">
      <property name="toolTip">
-      <string>Save the tokens in the save keyring of your operating system.</string>
+      <string>Keep the server logged in even after closing QGIS.</string>
      </property>
      <property name="text">
-      <string>Save tokens</string>
+      <string>Keep logged in</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
