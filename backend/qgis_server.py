@@ -77,6 +77,7 @@ class QgisServer:
         Uploads the project from a path to the server with project_name.
         Overrides it in the server if a project_id is given (there must exist a
         project with that ID).
+        Returns the project ID.
 
         :param project_id: Project's ID in the server.
         :type project_id: int or str
@@ -95,13 +96,15 @@ class QgisServer:
         with open(path, 'r') as f:
             qgis_project = f.read()
 
-        self.__get_result(
+        result = self.__get_result(
             self.__push_project,
             project_id,
             title,
             qgis_project,
             process_result=False,
         )
+
+        return result.json()['id']
 
     def __get_result(self, make_request, *args, process_result=True):
         """

@@ -31,7 +31,7 @@ class ProjectItem(QTreeWidgetItem):
         server_item.addChild(self)
         self.setText(0, self.name)
 
-    def _double_clicked(self):
+    def open(self):
         def open_project():
             project = QgsProject.instance()
             self.path = self.qgis_server.download_project(self.id)
@@ -40,7 +40,7 @@ class ProjectItem(QTreeWidgetItem):
             project.projectSaved.connect(save_project)
 
         def save_project():
-            self.qgis_server.upload_project(
+            self.id = self.qgis_server.upload_project(
                 self.id,
                 self.name,
                 self.path,
@@ -57,6 +57,9 @@ class ProjectItem(QTreeWidgetItem):
         self.iface.newProject(True)
         self.iface.newProjectCreated.disconnect(
             open_project)
+
+    def _double_clicked(self):
+        self.open()
 
     def context_menu(self, pos):
         pass
