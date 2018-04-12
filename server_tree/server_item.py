@@ -29,20 +29,20 @@ class ServerItem(QTreeWidgetItem):
         Settings.PROJECT + '-servers',
     )
 
-    def __init__(self, conn, tree, iface):
+    def __init__(self, conn, tree, giscube_admin):
         """
         Contructor.
         :param conn: The connection to the server.
         :type  conn: ..backend.Giscube
         :param tree: Widget that will contain this object.
         :type  tree: PyQt5.QtWidgets.QTreeWidget
-        :param iface: QGIS interface object.
-        :type  iface: qgis.core.QgisInterface
+        :param giscube_admin: Main plugin's object.
+        :type  giscube_admin: GiscubeAdmin
         """
         super().__init__()
 
-        self.iface = iface
-
+        self.giscube_admin = giscube_admin
+        self.iface = giscube_admin.iface
         self.giscube = conn
         self._tree = tree
 
@@ -52,6 +52,9 @@ class ServerItem(QTreeWidgetItem):
 
         self.new_project = QPushButton('New Project')
         tree.setItemWidget(self, 1, self.new_project)
+        self.new_project.clicked.connect(
+            lambda: self.giscube_admin.new_project_popup(self.name)
+            )
 
         key = self.name+'/url'
         if not self.saved_servers.contains(key):
@@ -69,7 +72,7 @@ class ServerItem(QTreeWidgetItem):
 
     @property
     def server_url(self):
-        self.giscube.server_url
+        return self.giscube.server_url
 
     def delete(self):
         # Remove tokens and prevent saving them again

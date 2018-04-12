@@ -30,40 +30,37 @@ class NewProjectDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # Add all the servers to the lsit and select ours
         self.servers.clear()
-        self.server.addItems(server_names)
+        self.servers.addItems(server_names)
         index = self.servers.findData(server)
-        self.servers.setCurrentText(index if index >= 0 else 0)
+        self.servers.setCurrentIndex(index if index >= 0 else 0)
 
         self.name.setText('New Project')
 
-        def add_current():
-            pass  # TODO
+        self.current.clicked.connect(lambda: self._add_current_project())
+        self.blank.clicked.connect(lambda: self._add_blank_project())
+        self.file.clicked.connect(lambda: self._add_file_project())
 
-        def add_blank():
-            def open_project():
-                add_current()
+    def _add_current_project(self):
+        self.accept()
 
-            self.iface.newProjectCreated.connect(
-                open_project,
-                Qt.DirectConnection)
-            self.iface.newProject(True)
+    def _add_blank_project(self):
+        self.giscube_admin.iface.newProjectCreated.connect(
+            lambda: self._add_current_project(),
+            Qt.DirectConnection)
+        self.giscube_admin.iface.newProject(True)
 
-        def add_file():
-            def open_project():
-                project = QgsProject.instance()
-                dialog = QFileDialog('open')
-                dialog.setFileMode(QFileDialog.ExistingFile)
-                dialog.setFilter("QGIS project (*.qgs)")
-                if dialog.exec_():
-                    path = dialog.selectedFiles()[0]
-                    project.read(path)
-                    add_current()
+    def _add_file_project(self):
+        def open_project():
+            project = QgsProject.instance()
+            dialog = QFileDialog()
+            dialog.setFileMode(QFileDialog.ExistingFile)
+            dialog.setFilter("QGIS project (*.qgs)")
+            if dialog.exec_():
+                path = dialog.selectedFiles()[0]
+                project.read(path)
+                self._add_current_project()
 
-            self.iface.newProjectCreated.connect(
-                open_project,
-                Qt.DirectConnection)
-            self.iface.newProject(True)
-
-        self.current.clicked.connect(add_current)
-        self.blank.clicked.connect(add_blank)
-        self.file.clicked.connect(add_file)
+        self.giscube_admin.iface.newProjectCreated.connect(
+            open_project,
+            Qt.DirectConnection)
+        self.giscube_admin.iface.newProject(True)

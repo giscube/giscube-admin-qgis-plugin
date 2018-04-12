@@ -4,10 +4,14 @@ This script contains GiscubeAdmin: the plugin's main class.
 """
 
 import os.path
+import time
 
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
+from PyQt5.QtCore import QSettings, QDir, Qt, \
+                         QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
+
+from qgis.core import QgsProject
 
 from .backend import Giscube
 
@@ -15,8 +19,11 @@ from .settings import Settings
 
 # Import the GUI classes
 from .giscube_admin_dockwidget import GiscubeAdminDockWidget
+
 from .server_tree.server_item import ServerItem
+from .server_tree.project_item import ProjectItem
 from .server_tree.new_server_dialog import NewServerDialog
+from .server_tree.new_project_dialog import NewProjectDialog
 
 # Initialize Qt resources from file resources.py
 from .resources import *  # NOQA
@@ -245,10 +252,11 @@ class GiscubeAdmin:
                 False,
                 name,
             )
-            ServerItem(conn, self.servers, self.iface)
+            ServerItem(conn, self.servers, self)
 
     def new_server_popup(self):
         """
+from .new_project_dialog import NewProjectDialog
         Opens a new server dialog.
         """
         dialog = NewServerDialog(self.dockwidget)
@@ -263,5 +271,33 @@ class GiscubeAdmin:
             ServerItem(
                 new_conn,
                 self.dockwidget.servers,
-                self.iface,
+                self,
             )
+
+    def new_project_popup(self, default_server=None):
+        dialog = NewProjectDialog(self)
+        if dialog.exec_():
+            project = QgsProject.instance()
+
+            if not project.write():
+                t = '{:.0f}'.format(time.time())
+                path = QDir.tempPath() + ('/qgis-admin-project-'+t+'.qgs')
+                if not project.write(path):
+                    pass  # TODO notify user
+
+            server_name = dialog.servers.currentText()
+            server_names = self.server_names()
+            server_index = server_names.index(server_name)
+            # TODO Add ValueError check and handeling (only can happen in
+            #        multithreded enviroments)
+
+            server = self.servers.topLevelItem(server_index)
+
+            project_name = dialog.name.text()
+            project_id = server.giscube.qgis_server.upload_project(
+                None,
+                project_name,
+                path)
+
+            project = ProjectItem(project_id, project_name, server)
+            project.open()
