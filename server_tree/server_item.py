@@ -106,7 +106,7 @@ class ServerItem(QTreeWidgetItem):
         menu.exec_(pos)
 
     def _expanded(self):
-        if self.childCount() == 1 and isinstance(self.child(0), LoadingItem):
+        if isinstance(self.child(0), LoadingItem):
             if not self.giscube.is_logged_in:
                 if not self._login_popup():
                     return
