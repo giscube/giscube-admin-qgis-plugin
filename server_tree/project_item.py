@@ -4,7 +4,7 @@ This script contains ProjectItem.
 """
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTreeWidgetItem
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem
 
 from qgis.core import QgsProject
 
@@ -62,4 +62,31 @@ class ProjectItem(QTreeWidgetItem):
         self.open()
 
     def context_menu(self, pos):
-        pass
+        menu = QMenu()
+
+        # def refresh():
+        #     main_company.list_job(ListProjectsJob(self))
+        # refresh_action = QAction('&Refresh projects')
+        # menu.addAction(refresh_action)
+        # refresh_action.triggered.connect(refresh)
+
+        # def close():
+        #     self.delete()
+        # close_action = QAction('&Close connection')
+        # menu.addAction(close_action)
+        # close_action.triggered.connect(close)
+
+        def open_():
+            self.open()
+        open_action = QAction('&Open project')
+        menu.addAction(open_action)
+        open_action.triggered.connect(open_)
+
+        def delete():
+            self.qgis_server.delete_project(self.id)
+            self.server_item.removeChild(self)
+        delete_action = QAction('&Delete project')
+        menu.addAction(delete_action)
+        delete_action.triggered.connect(delete)
+
+        menu.exec_(pos)
