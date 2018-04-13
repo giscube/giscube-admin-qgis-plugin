@@ -106,6 +106,13 @@ class QgisServer:
 
         return result.json()['id']
 
+    def delete_project(self, project_id):
+        self.__get_result(
+            self.__delete_project,
+            project_id,
+            process_result=False,
+        )
+
     def __get_result(self, make_request, *args, process_result=True):
         """
         Tries to get the a request result.
@@ -192,5 +199,21 @@ class QgisServer:
                 'id': project_id,
                 'name': title,
                 'data': qgis_project,
+            }
+        )
+
+    def __delete_project(self, project_id):
+        url = urljoin(
+            self.__giscube.server_url,
+            Api.PATH,
+            Api.PROJECTS,
+            str(project_id)+'/',
+        )
+
+        return requests.delete(
+            url,
+            data={
+                'client_id': self.__giscube.client_id,
+                'access_token': self.__giscube.access_token,
             }
         )
