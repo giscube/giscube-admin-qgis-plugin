@@ -275,7 +275,7 @@ from .new_project_dialog import NewProjectDialog
             )
 
     def new_project_popup(self, default_server=None):
-        dialog = NewProjectDialog(self)
+        dialog = NewProjectDialog(self, default_server)
         if dialog.exec_():
             project = QgsProject.instance()
 

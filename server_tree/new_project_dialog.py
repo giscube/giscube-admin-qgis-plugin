@@ -31,8 +31,12 @@ class NewProjectDialog(QtWidgets.QDialog, FORM_CLASS):
         # Add all the servers to the lsit and select ours
         self.servers.clear()
         self.servers.addItems(server_names)
-        index = self.servers.findData(server)
-        self.servers.setCurrentIndex(index if index >= 0 else 0)
+
+        try:
+            index = server_names.index(server)
+        except ValueError:
+            index = 0
+        self.servers.setCurrentIndex(index)
 
         self.name.setText('New Project')
 
