@@ -279,7 +279,9 @@ from .new_project_dialog import NewProjectDialog
         if dialog.exec_():
             project = QgsProject.instance()
 
-            if not project.write():
+            if project.write():
+                path = project.absoluteFilePath()
+            else:
                 t = '{:.0f}'.format(time.time())
                 path = QDir.tempPath() + ('/qgis-admin-project-'+t+'.qgs')
                 if not project.write(path):
