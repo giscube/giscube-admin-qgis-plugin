@@ -4,6 +4,7 @@ Package containing utility functions for the backend.
 """
 
 import re
+from urllib.parse import urlparse
 
 
 def urljoin(base, *parts):
@@ -21,3 +22,9 @@ def urljoin(base, *parts):
         '/',
         result)
     return result
+
+
+def is_url_valid(url, allowed_schemes):
+    parsed = urlparse(url)
+    is_valid = (parsed.scheme in allowed_schemes)
+    return is_valid

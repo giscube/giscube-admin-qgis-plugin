@@ -4,8 +4,10 @@ Package containing all the classes and utilities to communicate with the
 Giscube server.
 """
 
-from PyQt5.QtCore import QDir
+import time
 import requests
+
+from PyQt5.QtCore import QDir
 
 from .constants import Api
 from .exceptions import Unauthorized
@@ -60,7 +62,10 @@ class QgisServer:
 
         response = self.__get_result(self.__request_project, project_id)
 
-        path = QDir.tempPath() + '/qgis-admin-project-'+str(project_id)+'.qgs'
+        t = '{:.0f}'.format(time.time())
+        path = QDir.tempPath() + (
+            '/qgis-admin-project-'+str(project_id)+'-'+t+'.qgs'
+        )
         with open(path, 'w') as f:
             if 'data' in response:
                 f.write(response['data'])
@@ -72,6 +77,7 @@ class QgisServer:
         Uploads the project from a path to the server with project_name.
         Overrides it in the server if a project_id is given (there must exist a
         project with that ID).
+        Returns the project ID.
 
         :param project_id: Project's ID in the server.
         :type project_id: int or str
@@ -90,11 +96,20 @@ class QgisServer:
         with open(path, 'r') as f:
             qgis_project = f.read()
 
-        self.__get_result(
+        result = self.__get_result(
             self.__push_project,
             project_id,
             title,
             qgis_project,
+            process_result=False,
+        )
+
+        return result.json()['id']
+
+    def delete_project(self, project_id):
+        self.__get_result(
+            self.__delete_project,
+            project_id,
             process_result=False,
         )
 
@@ -181,7 +196,24 @@ class QgisServer:
                 'access_token': self.__giscube.access_token,
             },
             data={
-                'title': title,
+                'id': project_id,
+                'name': title,
                 'data': qgis_project,
+            }
+        )
+
+    def __delete_project(self, project_id):
+        url = urljoin(
+            self.__giscube.server_url,
+            Api.PATH,
+            Api.PROJECTS,
+            str(project_id)+'/',
+        )
+
+        return requests.delete(
+            url,
+            data={
+                'client_id': self.__giscube.client_id,
+                'access_token': self.__giscube.access_token,
             }
         )

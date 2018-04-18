@@ -16,14 +16,14 @@ class Giscube:
     Giscube API client.
     Handles the login and recived token. It can be saved in a vault.
     """
-    KEYRING_NAME = "giscube-admin-qgis-plugin"
+    KEYRING_PREFIX = "giscube-admin-qgis-plugin-"
 
     def __init__(
             self,
             server_url,
             client_id,
             save_tokens=True,
-            keyring_name=None):
+            name=''):
         """
         Contructor. Loads, if enabled, the saved tokens.
         :param server_url: Used server service URL
@@ -42,12 +42,20 @@ class Giscube:
         self.__qgis_server = None
 
         self._save = save_tokens
-        if keyring_name is not None:
-            self._keyring_client_name = keyring_name
-        else:
-            self._keyring_client_name = self.KEYRING_NAME
+        self.__name = name
+        self._keyring_client_name = self.KEYRING_PREFIX + name
 
         self.__load_tokens()
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        self.delete_saved()
+        self.__name = name
+        self.__save_tokens()
 
     @property
     def qgis_server(self):
@@ -100,6 +108,16 @@ class Giscube:
         Is the user logged in?
         """
         return self.has_access_token
+
+    @property
+    def save_tokens(self):
+        return self._save
+
+    @save_tokens.setter
+    def save_tokens(self, v):
+        self.delete_saved()
+        self._save = (v is True)
+        self.__save_tokens()
 
     def login(self, user, password):
         """
@@ -171,11 +189,31 @@ class Giscube:
 
         return True
 
+    def delete_saved(self):
+        """
+        Deletes the locally saved tokens (if they are).
+        """
+        try:
+            keyring.delete_password(
+                self._keyring_client_name,
+                Vault.ACCESS_TOKEN_KEY,
+            )
+        except:
+            pass
+
+        try:
+            keyring.delete_password(
+                self._keyring_client_name,
+                Vault.REFRESH_TOKEN_KEY,
+            )
+        except:
+            pass
+
     def __load_tokens(self):
         """
         Loads the tokens from a safe place.
         """
-        if not self._save:
+        if self.__access_token is not None and not self._save:
             return
 
         self.__access_token = keyring.get_password(
@@ -208,23 +246,3 @@ class Giscube:
                 Vault.REFRESH_TOKEN_KEY,
                 self.__refresh_token,
             )
-
-    def delete_saved(self):
-        """
-        Deletes the locally saved tokens (if they are).
-        """
-        try:
-            keyring.delete_password(
-                self._keyring_client_name,
-                Vault.ACCESS_TOKEN_KEY,
-            )
-        except:
-            pass
-
-        try:
-            keyring.delete_password(
-                self._keyring_client_name,
-                Vault.REFRESH_TOKEN_KEY,
-            )
-        except:
-            pass

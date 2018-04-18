@@ -15,10 +15,11 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class GiscubeAdminConfigureDialog(QtWidgets.QDialog, FORM_CLASS):
 
-    def __init__(self, url='', parent=None):
+    def __init__(self, settings, parent=None):
         """Constructor."""
         super(GiscubeAdminConfigureDialog, self).__init__(parent)
 
         # Set up the user interface from Designer.
         self.setupUi(self)
-        self.url.setText(url)
+
+        # Set current values

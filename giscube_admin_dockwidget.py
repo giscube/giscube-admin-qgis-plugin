@@ -7,7 +7,9 @@ opens with the plugin.
 import os
 
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
+
+from .tree_controller import TreeController
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'giscube_admin_dockwidget_base.ui'))
@@ -17,19 +19,21 @@ class GiscubeAdminDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     closingPlugin = pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, plugin, parent=None):
         """Constructor."""
         super(GiscubeAdminDockWidget, self).__init__(parent)
 
         # Set up the user interface from Designer.
         self.setupUi(self)
 
+        self.servers.setColumnWidth(0, 180)
+        self.servers.setContextMenuPolicy(Qt.CustomContextMenu)
+
+        self.tree_controller = TreeController(self.servers)
+
         # Add signals and slots connections
-        self.loginSubmit.clicked.connect(self.__login)
+        self.new_server.clicked.connect(plugin.new_server_popup)
 
     def closeEvent(self, event):
         self.closingPlugin.emit()
         event.accept()
-
-    def __login(self):
-        pass  # TODO actual login

@@ -3,20 +3,37 @@
 This script contains GiscubeAdmin: the plugin's main class.
 """
 
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
+import os.path
+import time
+
+from PyQt5.QtCore import QSettings, QDir, Qt, \
+                         QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
-# Initialize Qt resources from file resources.py
-from .resources import *
 
-# Import the code for the DockWidget
+from qgis.core import QgsProject
+
+from .backend import Giscube
+
+from .settings import Settings
+
+# Import the GUI classes
 from .giscube_admin_dockwidget import GiscubeAdminDockWidget
-from .giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
-import os.path
+
+from .server_tree.server_item import ServerItem
+from .server_tree.project_item import ProjectItem
+from .server_tree.new_server_dialog import NewServerDialog
+from .server_tree.new_project_dialog import NewProjectDialog
+
+# Initialize Qt resources from file resources.py
+from .resources import *  # NOQA
 
 
 class GiscubeAdmin:
     """QGIS Plugin Implementation."""
+
+    # Plugin's client ID
+    CLIENT_ID = 'omBayn3JMTuFBuErZWPA4o2NgeJlqlCa6cP4dxxY'
 
     def __init__(self, iface):
         """Constructor.
@@ -26,19 +43,17 @@ class GiscubeAdmin:
             application at run time.
         :type iface: QgsInterface
         """
+
+        self.servers = None
+
         # Save reference to the QGIS interface
         self.iface = iface
 
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
 
-        # initialize settings (with defaults)
-        self.settings = QSettings(
-            'Microdisseny Giscube SLU',
-            'giscube-admin-qgis-plugin')
-
-        if not self.settings.contains('config/url'):
-            self.settings.setValue('config/url', 'https://giscube.com/')
+        # initialize and load settings
+        self.settings = Settings()
 
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
@@ -62,6 +77,15 @@ class GiscubeAdmin:
 
         self.pluginIsActive = False
         self.dockwidget = None
+
+    def server_names(self):
+        """
+        Names of the currently connected servers.
+        """
+        r = []
+        for i in range(self.servers.topLevelItemCount()):
+            r.append(self.servers.topLevelItem(i).name)
+        return r
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -164,7 +188,7 @@ class GiscubeAdmin:
         self.add_action(
             icon_path,
             text=self.tr(u'Configure Giscube Admin'),
-            callback=self.configure,
+            callback=self.settings.edit_popup,
             parent=self.iface.mainWindow(),
             add_to_toolbar=False)
 
@@ -203,8 +227,7 @@ class GiscubeAdmin:
             #    first run of plugin
             #    removed on close (see self.onClosePlugin method)
             if self.dockwidget is None:
-                # Create the dockwidget (after translation) and keep reference
-                self.dockwidget = GiscubeAdminDockWidget()
+                self.make_dockwidget()
 
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
@@ -213,12 +236,70 @@ class GiscubeAdmin:
             self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
 
-    def configure(self):
-            """Configure method that makes a popup to configure the plugin"""
-            # make and execute dialog
-            dialog = GiscubeAdminConfigureDialog(
-                self.settings.value('config/url'))
+    def make_dockwidget(self):
+        """
+        Makes and configures the plugin to make the dockwidget.
+        """
+        # Create the dockwidget (after translation) and keep reference
+        self.dockwidget = GiscubeAdminDockWidget(self)
 
-            if dialog.exec_():
-                # Save the new settings (if the user clicks to save)
-                self.settings.setValue('config/url', dialog.url.text())
+        self.servers = self.dockwidget.servers
+
+        for name in ServerItem.saved_servers.childGroups():
+            conn = Giscube(
+                ServerItem.saved_servers.value(name+'/url'),
+                self.CLIENT_ID,
+                False,
+                name,
+            )
+            ServerItem(conn, self.servers, self)
+
+    def new_server_popup(self):
+        """
+from .new_project_dialog import NewProjectDialog
+        Opens a new server dialog.
+        """
+        dialog = NewServerDialog(self.dockwidget)
+        if dialog.exec_():
+            result = dialog.values()
+            new_conn = Giscube(
+                result['url'],
+                self.CLIENT_ID,
+                False,
+                result['name'],
+            )
+            ServerItem(
+                new_conn,
+                self.dockwidget.servers,
+                self,
+            )
+
+    def new_project_popup(self, default_server=None):
+        dialog = NewProjectDialog(self, default_server)
+        if dialog.exec_():
+            project = QgsProject.instance()
+
+            if project.write():
+                path = project.fileInfo().absoluteFilePath()
+            else:
+                t = '{:.0f}'.format(time.time())
+                path = QDir.tempPath() + ('/qgis-admin-project-'+t+'.qgs')
+                if not project.write(path):
+                    pass  # TODO notify user
+
+            server_name = dialog.servers.currentText()
+            server_names = self.server_names()
+            server_index = server_names.index(server_name)
+            # TODO Add ValueError check and handeling (only can happen in
+            #        multithreded enviroments)
+
+            server = self.servers.topLevelItem(server_index)
+
+            project_name = dialog.name.text()
+            project_id = server.giscube.qgis_server.upload_project(
+                None,
+                project_name,
+                path)
+
+            project = ProjectItem(project_id, project_name, server)
+            project.open()
