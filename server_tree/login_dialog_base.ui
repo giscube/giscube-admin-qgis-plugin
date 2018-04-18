@@ -67,7 +67,7 @@
   <customwidget>
    <class>QgsPasswordLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>qgspasswordlineedit.h</header>
+   <header>QgsPasswordLineEdit</header>
   </customwidget>
  </customwidgets>
  <tabstops>
