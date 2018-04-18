@@ -55,16 +55,18 @@ class NewProjectDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def _add_file_project(self):
         def open_project():
+            self.giscube_admin.iface.newProjectCreated.disconnect(
+                open_project)
             project = QgsProject.instance()
-            dialog = QFileDialog()
-            dialog.setFileMode(QFileDialog.ExistingFile)
-            dialog.setFilter("QGIS project (*.qgs)")
-            if dialog.exec_():
-                path = dialog.selectedFiles()[0]
-                project.read(path)
-                self._add_current_project()
+            path = dialog.selectedFiles()[0]
+            project.read(path)
+            self._add_current_project()
 
-        self.giscube_admin.iface.newProjectCreated.connect(
-            open_project,
-            Qt.DirectConnection)
-        self.giscube_admin.iface.newProject(True)
+        dialog = QFileDialog()
+        dialog.setFileMode(QFileDialog.ExistingFile)
+        dialog.setNameFilter("QGIS project (*.qgs)")
+        if dialog.exec_():
+            self.giscube_admin.iface.newProjectCreated.connect(
+                open_project,
+                Qt.DirectConnection)
+            self.giscube_admin.iface.newProject(True)
