@@ -9,7 +9,7 @@ from .giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
 
 
 class Settings:
-    ORGANIZATION = 'Microdisseny Giscube SLU'
+    ORGANIZATION = 'Giscube'
     PROJECT = 'giscube-admin-qgis-plugin'
 
     SETTINGS_PREFIX = 'setting/'
