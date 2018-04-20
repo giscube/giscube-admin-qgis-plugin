@@ -14,6 +14,7 @@ class Slave(QThread):
     Performs jobs. It's its own thread.
     """
     _job_done = pyqtSignal(Job)
+    _exception_risen = pyqtSignal(Job, Exception)
 
     def __init__(self, company, job):
         """
@@ -32,6 +33,10 @@ class Slave(QThread):
             j.apply_result()
         self._job_done.connect(apply_job_result, Qt.QueuedConnection)
 
+        def exception_risen(j, e):
+            j.exception_risen(e)
+        self._exception_risen.connect(exception_risen, Qt.QueuedConnection)
+
         self.finished.connect(lambda: company.free_slave(self))
 
     def run(self):
@@ -42,8 +47,11 @@ class Slave(QThread):
             return
 
         while True:
-            self.job.do_work()
-            self._job_done.emit(self.job)
+            try:
+                self.job.do_work()
+                self._job_done.emit(self.job)
+            except Exception as e:
+                self._exception_risen.emit(self.job, e)
 
             self.job = self.company._aquire_job(self)
             if self.job is None:
