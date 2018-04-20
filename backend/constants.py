@@ -16,8 +16,9 @@ class Api:
     """
     Contains API constants.
     """
-    PATH = 'api/v1/'
-    PROJECTS = 'qgisserver/project/'
+    PATH = '/api/v1'
+    PROJECTS = '/qgisserver/project'
+    PUBLISH = '/publish'
     UNAUTHORIZED = 401
 
 
