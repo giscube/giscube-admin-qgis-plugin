@@ -23,7 +23,7 @@ class PublishDialog(QtWidgets.QDialog, FORM_CLASS):
     def values(self):
         values_dic = {
             'title': self.title.text(),
-            'description': self.descr.text(),
+            'description': self.descr.toPlainText(),
             'keywords': self.keywords.text(),
             'visible_on_geoportal': self.visible_on_geoportal.isChecked(),
         }
