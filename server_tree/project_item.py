@@ -4,9 +4,11 @@ This script contains ProjectItem.
 """
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
 
 from qgis.core import QgsProject
+
+from .publish_dialog import PublishDialog
 
 
 class ProjectItem(QTreeWidgetItem):
@@ -30,6 +32,12 @@ class ProjectItem(QTreeWidgetItem):
 
         server_item.addChild(self)
         self.setText(0, self.name)
+
+        self.publish = QPushButton('Publish')
+        server_item.treeWidget().setItemWidget(self, 1, self.publish)
+        self.publish.clicked.connect(
+            lambda: self._publish_popup()
+            )
 
     def open(self):
         def open_project():
@@ -90,3 +98,11 @@ class ProjectItem(QTreeWidgetItem):
         delete_action.triggered.connect(delete)
 
         menu.exec_(pos)
+
+    def _publish_popup(self):
+        dialog = PublishDialog(self.name)
+        if dialog.exec_():
+            self.qgis_server.publish_project(
+                self.id,
+                **dialog.values()
+            )
