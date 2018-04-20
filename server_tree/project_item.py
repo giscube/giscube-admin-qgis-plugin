@@ -67,6 +67,9 @@ class ProjectItem(QTreeWidgetItem):
         self.iface.newProjectCreated.disconnect(
             open_project)
 
+    def disable_publication(self):
+        pass
+
     def _double_clicked(self):
         self.open()
 
@@ -94,9 +97,15 @@ class ProjectItem(QTreeWidgetItem):
         def delete():
             self.qgis_server.delete_project(self.id)
             self.server_item.removeChild(self)
-        delete_action = QAction('&Delete project')
+        delete_action = QAction('Delete project')
         menu.addAction(delete_action)
         delete_action.triggered.connect(delete)
+
+        def disable_publication():
+            self.disable_publication()
+        disable_action = QAction('Disable publication')
+        menu.addAction(disable_action)
+        disable_action.triggered.connect(disable_publication)
 
         menu.exec_(pos)
 
