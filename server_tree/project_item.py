@@ -16,7 +16,7 @@ class ProjectItem(QTreeWidgetItem):
     Server instance on the plugin's server tree UI.
     Controlls the interaction with the user.
     """
-    def __init__(self, id, name, server_item):
+    def __init__(self, id, name, server_item, published=None):
         """
         Contructor.
         """
@@ -25,6 +25,7 @@ class ProjectItem(QTreeWidgetItem):
         self.id = id
         self.name = name
         self.path = None
+        self.published = published
 
         self.server_item = server_item
         self.qgis_server = self.server_item.giscube.qgis_server
@@ -100,9 +101,10 @@ class ProjectItem(QTreeWidgetItem):
         menu.exec_(pos)
 
     def _publish_popup(self):
-        dialog = PublishDialog(self.name)
+        dialog = PublishDialog(self.name, self.published)
         if dialog.exec_():
-            self.qgis_server.publish_project(
+            published = self.qgis_server.publish_project(
                 self.id,
                 **dialog.values()
             )
+            self.published = published

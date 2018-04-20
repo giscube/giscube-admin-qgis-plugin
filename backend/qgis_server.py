@@ -44,7 +44,10 @@ class QgisServer:
         projects = {
             result['id']: result['name'] for result in response['results']
         }
-        return projects
+        services = {
+            r['id']: r['service'] for r in response['results'] if r['service']
+        }
+        return projects, services
 
     def download_project(self, project_id):
         """

@@ -15,12 +15,17 @@ class PublishDialog(QtWidgets.QDialog, FORM_CLASS):
     """
     Popup dialog that ask for the necessary data to publish a project.
     """
-    def __init__(self, name, parent=None):
+    def __init__(self, name, published, parent=None):
         super().__init__(parent=parent)
 
         self.setupUi(self)
 
-        self.title.setText(name)
+        self.title.setText(published.get('title', name))
+        self.descr.setPlainText(published.get('description'))
+        self.keywords.setText(published.get('keywords'))
+        self.visible_on_geoportal.setChecked(
+            published.get('visible_on_geoportal', True)
+        )
 
     def values(self):
         values_dic = {
