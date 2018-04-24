@@ -101,11 +101,11 @@ class ProjectItem(QTreeWidgetItem):
         menu.addAction(delete_action)
         delete_action.triggered.connect(delete)
 
-        def disable_publication():
-            self.disable_publication()
-        disable_action = QAction('Disable publication')
-        menu.addAction(disable_action)
-        disable_action.triggered.connect(disable_publication)
+        # def disable_publication():
+        #     self.disable_publication()
+        # disable_action = QAction('Disable publication')
+        # menu.addAction(disable_action)
+        # disable_action.triggered.connect(disable_publication)
 
         menu.exec_(pos)
 

@@ -19,6 +19,7 @@ class Api:
     PATH = '/api/v1'
     PROJECTS = '/qgisserver/project'
     PUBLISH = '/publish'
+    DISABLE_PUBLICATION = '/disable'
     UNAUTHORIZED = 401
 
 
