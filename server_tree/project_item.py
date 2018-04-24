@@ -25,7 +25,7 @@ class ProjectItem(QTreeWidgetItem):
         self.id = id
         self.name = name
         self.path = None
-        self.published = published
+        self.published = published or {}
 
         self.server_item = server_item
         self.qgis_server = self.server_item.giscube.qgis_server
