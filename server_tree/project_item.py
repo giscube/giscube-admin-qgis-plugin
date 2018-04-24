@@ -4,9 +4,11 @@ This script contains ProjectItem.
 """
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
 
 from qgis.core import QgsProject
+
+from .publish_dialog import PublishDialog
 
 
 class ProjectItem(QTreeWidgetItem):
@@ -14,7 +16,7 @@ class ProjectItem(QTreeWidgetItem):
     Server instance on the plugin's server tree UI.
     Controlls the interaction with the user.
     """
-    def __init__(self, id, name, server_item):
+    def __init__(self, id, name, server_item, published=None):
         """
         Contructor.
         """
@@ -23,6 +25,7 @@ class ProjectItem(QTreeWidgetItem):
         self.id = id
         self.name = name
         self.path = None
+        self.published = published or {}
 
         self.server_item = server_item
         self.qgis_server = self.server_item.giscube.qgis_server
@@ -30,6 +33,12 @@ class ProjectItem(QTreeWidgetItem):
 
         server_item.addChild(self)
         self.setText(0, self.name)
+
+        self.publish = QPushButton('Publish')
+        server_item.treeWidget().setItemWidget(self, 1, self.publish)
+        self.publish.clicked.connect(
+            lambda: self._publish_popup()
+            )
 
     def open(self):
         def open_project():
@@ -58,6 +67,9 @@ class ProjectItem(QTreeWidgetItem):
         self.iface.newProjectCreated.disconnect(
             open_project)
 
+    def disable_publication(self):
+        pass
+
     def _double_clicked(self):
         self.open()
 
@@ -85,8 +97,23 @@ class ProjectItem(QTreeWidgetItem):
         def delete():
             self.qgis_server.delete_project(self.id)
             self.server_item.removeChild(self)
-        delete_action = QAction('&Delete project')
+        delete_action = QAction('Delete project')
         menu.addAction(delete_action)
         delete_action.triggered.connect(delete)
 
+        # def disable_publication():
+        #     self.disable_publication()
+        # disable_action = QAction('Disable publication')
+        # menu.addAction(disable_action)
+        # disable_action.triggered.connect(disable_publication)
+
         menu.exec_(pos)
+
+    def _publish_popup(self):
+        dialog = PublishDialog(self.name, self.published)
+        if dialog.exec_():
+            published = self.qgis_server.publish_project(
+                self.id,
+                **dialog.values()
+            )
+            self.published = published

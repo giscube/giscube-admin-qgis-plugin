@@ -44,7 +44,10 @@ class QgisServer:
         projects = {
             result['id']: result['name'] for result in response['results']
         }
-        return projects
+        services = {
+            r['id']: r['service'] for r in response['results'] if r['service']
+        }
+        return projects, services
 
     def download_project(self, project_id):
         """
@@ -112,6 +115,18 @@ class QgisServer:
             project_id,
             process_result=False,
         )
+
+    def publish_project(self, project_id,
+                        title, description, keywords, on_geoportal):
+        result = self.__get_result(
+            self.__publish_project,
+            project_id,
+            title,
+            description,
+            keywords,
+            on_geoportal,
+        )
+        return result["service"]
 
     def __get_result(self, make_request, *args, process_result=True):
         """
@@ -186,16 +201,14 @@ class QgisServer:
                 self.__giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS,
-                str(project_id)+'/',
+                str(project_id),
             )
 
         return request(
             url,
-            params={
+            data={
                 'client_id': self.__giscube.client_id,
                 'access_token': self.__giscube.access_token,
-            },
-            data={
                 'id': project_id,
                 'name': title,
                 'data': qgis_project,
@@ -207,7 +220,7 @@ class QgisServer:
             self.__giscube.server_url,
             Api.PATH,
             Api.PROJECTS,
-            str(project_id)+'/',
+            str(project_id),
         )
 
         return requests.delete(
@@ -215,5 +228,27 @@ class QgisServer:
             data={
                 'client_id': self.__giscube.client_id,
                 'access_token': self.__giscube.access_token,
+            }
+        )
+
+    def __publish_project(self, project_id,
+                          title, description, keywords, on_geoportal):
+        url = urljoin(
+            self.__giscube.server_url,
+            Api.PATH,
+            Api.PROJECTS,
+            str(project_id),
+            Api.PUBLISH,
+        )
+        return requests.post(
+            url,
+            data={
+                'client_id': self.__giscube.client_id,
+                'access_token': self.__giscube.access_token,
+                'name': "project",
+                'title': title,
+                'description': description,
+                'keywords': keywords,
+                'visible_on_geoportal': on_geoportal,
             }
         )

@@ -110,7 +110,6 @@ class ServerItem(QTreeWidgetItem):
             if not self.giscube.is_logged_in:
                 if not self._login_popup():
                     return
-
             main_company.list_job(ListProjectsJob(self))
 
     def _login_popup(self):
@@ -129,7 +128,7 @@ class ServerItem(QTreeWidgetItem):
                     self.giscube.save_tokens = result['save_tokens']
                     break
             except Exception as e:
-                print(e)  # TODO actually do something
+                print('{}'.format(e))  # TODO actually do something
 
         return True
 
@@ -145,6 +144,7 @@ class ListProjectsJob(Job):
         super().__init__()
         self.si = si
         self.projects = None
+        self.services = None
         self.succeded = False
 
     def do_work(self):
@@ -152,8 +152,9 @@ class ListProjectsJob(Job):
         Do the asynchronous job.
         Reuests the server the list of projects.
         """
+        qgis_server = self.si.giscube.qgis_server
         try:
-            self.projects = self.si.giscube.qgis_server.projects()
+            self.projects, self.services = qgis_server.projects()
             self.succeded = True
         except Unauthorized:
             pass  # TODO do message?
@@ -166,6 +167,11 @@ class ListProjectsJob(Job):
         if self.succeded:
             self.si.takeChildren()
             for pid, name in self.projects.items():
-                ProjectItem(pid, name, self.si)
+                if pid in self.services:
+                    service = self.services[pid]
+                else:
+                    service = None
+
+                ProjectItem(pid, name, self.si, service)
         elif self.si._login_popup():
             main_company.list_job(self)

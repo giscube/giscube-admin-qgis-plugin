@@ -28,3 +28,9 @@ class Job:
         Normally used to update GUI.
         """
         pass
+
+    def exception_risen(self, exception):
+        """
+        There was an error during the asynchronous execution.
+        """
+        raise exception
