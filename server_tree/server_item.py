@@ -3,8 +3,11 @@
 This script contains ServerItem: The instance of the server UI.
 """
 
+from requests.exceptions import RequestException
+
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
+
 from qgis.gui import QgsMessageBar
 
 from ..settings import Settings
@@ -130,7 +133,7 @@ class ServerItem(QTreeWidgetItem):
                     break
                 else:
                     dialog.error.setText("Incorrect username or password.")
-            except Exception as e:
+            except RequestException as e:
                 self.iface.messageBar().pushMessage(
                     "Error",
                     "No s'ha pogut connectar al servidor",
@@ -160,11 +163,8 @@ class ListProjectsJob(Job):
         Reuests the server the list of projects.
         """
         qgis_server = self.si.giscube.qgis_server
-        try:
-            self.projects, self.services = qgis_server.projects()
-            self.succeded = True
-        except Unauthorized:
-            pass  # TODO do message?
+        self.projects, self.services = qgis_server.projects()
+        self.succeded = True
 
     def apply_result(self):
         """
@@ -182,3 +182,18 @@ class ListProjectsJob(Job):
                 ProjectItem(pid, name, self.si, service)
         elif self.si._login_popup():
             main_company.list_job(self)
+
+    def exception_risen(self, exception):
+        try:
+            super().exception_risen(exception)
+        except Unauthorized:
+            # The saved credential expired. Remove them and start the loging
+            #   and querying again.
+            self.si.giscube.delete_saved()
+            self.si._expanded()
+        except RequestException as e:
+            self.iface.messageBar().pushMessage(
+                "Error",
+                "No s'ha pogut connectar al servidor",
+                QgsMessageBar.ERROR
+            )

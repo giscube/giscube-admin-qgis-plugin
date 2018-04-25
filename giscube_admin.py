@@ -12,6 +12,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
 from qgis.core import QgsProject
+from qgis.gui import QgsMessageBar
 
 from .backend import Giscube
 
@@ -285,7 +286,11 @@ from .new_project_dialog import NewProjectDialog
                 t = '{:.0f}'.format(time.time())
                 path = QDir.tempPath() + ('/qgis-admin-project-'+t+'.qgs')
                 if not project.write(path):
-                    pass  # TODO notify user
+                    self.iface.messageBar().pushMessage(
+                        "Error",
+                        "No s'ha pogut guardar el projecte",
+                        QgsMessageBar.ERROR
+                    )
 
             server_name = dialog.servers.currentText()
             server_names = self.server_names()
