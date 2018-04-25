@@ -8,7 +8,8 @@ class OAuth:
     """
     Contains Oauth2 constants.
     """
-    PATH = 'o/token/'
+    PATH = '/o/token'
+    ADMIN_WEBSIDE = '/admin'
     UNAUTHORIZED = 401
 
 

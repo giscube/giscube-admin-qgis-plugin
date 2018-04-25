@@ -5,7 +5,8 @@ This script contains ServerItem: The instance of the server UI.
 
 from requests.exceptions import RequestException
 
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSettings, QUrl
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
 
 from qgis.gui import QgsMessageBar
@@ -101,9 +102,15 @@ class ServerItem(QTreeWidgetItem):
         menu.addAction(refresh_action)
         refresh_action.triggered.connect(refresh)
 
+        def admin_webside():
+            QDesktopServices.openUrl(QUrl(self.giscube.admin_webside))
+        admin_webside_action = QAction('&Open admin webside')
+        menu.addAction(admin_webside_action)
+        admin_webside_action.triggered.connect(admin_webside)
+
         def close():
             self.delete()
-        close_action = QAction('&Close connection')
+        close_action = QAction('Close connection')
         menu.addAction(close_action)
         close_action.triggered.connect(close)
 

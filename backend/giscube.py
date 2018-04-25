@@ -58,6 +58,10 @@ class Giscube:
         self.__save_tokens()
 
     @property
+    def admin_webside(self):
+        return urljoin(self._server_url, OAuth.ADMIN_WEBSIDE)
+
+    @property
     def qgis_server(self):
         """
         Giscube's QGis Server API client.
