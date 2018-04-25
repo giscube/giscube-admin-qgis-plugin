@@ -5,6 +5,7 @@ This script contains ServerItem: The instance of the server UI.
 
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
+from qgis.gui import QgsMessageBar
 
 from ..settings import Settings
 
@@ -113,8 +114,8 @@ class ServerItem(QTreeWidgetItem):
             main_company.list_job(ListProjectsJob(self))
 
     def _login_popup(self):
+        dialog = LoginDialog(self.treeWidget())
         while True:
-            dialog = LoginDialog(self.treeWidget())
             if not dialog.exec_():
                 self._tree.collapseItem(self)
                 return False
@@ -127,8 +128,14 @@ class ServerItem(QTreeWidgetItem):
                         result['password']):
                     self.giscube.save_tokens = result['save_tokens']
                     break
+                else:
+                    dialog.error.setText("Incorrect username or password.")
             except Exception as e:
-                print('{}'.format(e))  # TODO actually do something
+                self.iface.messageBar().pushMessage(
+                    "Error",
+                    "No s'ha pogut connectar al servidor",
+                    QgsMessageBar.ERROR
+                )
 
         return True
 
