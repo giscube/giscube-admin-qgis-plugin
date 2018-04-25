@@ -110,7 +110,7 @@ class ServerItem(QTreeWidgetItem):
 
         def close():
             self.delete()
-        close_action = QAction('Close connection')
+        close_action = QAction('Remove server')
         menu.addAction(close_action)
         close_action.triggered.connect(close)
 
