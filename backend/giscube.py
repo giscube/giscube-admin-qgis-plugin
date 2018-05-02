@@ -14,7 +14,7 @@ from .qgis_server import QgisServer
 class Giscube:
     """
     Giscube API client.
-    Handles the login and recived token. It can be saved in a vault.
+    Handles the login and recives token. It can be saved in a vault.
     """
     KEYRING_PREFIX = "giscube-admin-qgis-plugin-"
 
@@ -25,12 +25,13 @@ class Giscube:
             save_tokens=True,
             name=''):
         """
-        Contructor. Loads, if enabled, the saved tokens.
-        :param server_url: Used server service URL
+        Contructor. Sets up the initial state. Loads, if enabled, the tokens
+        saved in the vault.
+        :param server_url: Base URL to the server to connect.
         :type server_url: str
-        :param client_id: Application OAuth client ID
+        :param client_id: Application OAuth client ID.
         :type client_id: str or unicode
-        :param save_tokens: Enables saving the tokens in a local vault
+        :param save_tokens: Should the tokens be saved in the vault?
         :type save_tokens: bool
         """
 
@@ -49,6 +50,9 @@ class Giscube:
 
     @property
     def name(self):
+        """
+        The name of this connection. Used to identify the connection.
+        """
         return self.__name
 
     @name.setter
@@ -74,14 +78,14 @@ class Giscube:
     @property
     def server_url(self):
         """
-        Base URL of the server.
+        Base URL to the server which we are (or want to be) connected.
         """
         return self._server_url
 
     @property
     def client_id(self):
         """
-        Gets the client ID for this client, for this server.
+        OAuth client ID.
         """
         return self._client_id
 
@@ -115,6 +119,9 @@ class Giscube:
 
     @property
     def save_tokens(self):
+        """
+        Does it save the tokens?
+        """
         return self._save
 
     @save_tokens.setter
