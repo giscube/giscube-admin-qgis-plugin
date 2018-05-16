@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script contains the class TreeController: controlls the behavior of the
-items in the dock tree.
+This script contains the class TreeController.
 """
 
 from .server_item import ServerItem
@@ -9,6 +8,9 @@ from .project_item import ProjectItem
 
 
 class TreeController:
+    """
+    Forwards the desired signals to the correct item in the tree.
+    """
     def __init__(self, tree):
         self.tree = tree
 

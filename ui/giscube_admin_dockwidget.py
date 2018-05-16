@@ -16,7 +16,9 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class GiscubeAdminDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
-
+    """
+    Plugin's main widget.
+    """
     closingPlugin = pyqtSignal()
 
     def __init__(self, plugin, parent=None):

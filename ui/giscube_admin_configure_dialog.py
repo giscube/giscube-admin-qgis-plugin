@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script contains GiscubeAdminConfigureDialog: the class of the lateral dock
-that opens with the plugin.
+This script contains GiscubeAdminConfigureDialog.
 """
 
 import os
@@ -13,6 +12,10 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class GiscubeAdminConfigureDialog(QtWidgets.QDialog, FORM_CLASS):
+    """
+    Popup that allows the user to edit the necessary global settings of this
+    plugin.
+    """
 
     def __init__(self, settings, parent=None):
         """Constructor."""
