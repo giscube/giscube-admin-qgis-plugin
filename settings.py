@@ -5,7 +5,7 @@ This script contains the plugin's settings logic and defaults.
 
 from PyQt5.QtCore import QSettings
 
-from .giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
+from .ui.giscube_admin_configure_dialog import GiscubeAdminConfigureDialog
 
 
 class Settings:

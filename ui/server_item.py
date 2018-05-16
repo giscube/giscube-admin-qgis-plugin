@@ -13,10 +13,10 @@ from qgis.gui import QgsMessageBar
 
 from ..settings import Settings
 
+from ..backend import Unauthorized
+
 from ..async import Job
 from ..main_company import main_company
-
-from ..backend import Unauthorized
 
 from .loading_item import LoadingItem
 from .project_item import ProjectItem

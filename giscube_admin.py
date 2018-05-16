@@ -19,12 +19,11 @@ from .backend import Giscube
 from .settings import Settings
 
 # Import the GUI classes
-from .giscube_admin_dockwidget import GiscubeAdminDockWidget
-
-from .server_tree.server_item import ServerItem
-from .server_tree.project_item import ProjectItem
-from .server_tree.new_server_dialog import NewServerDialog
-from .server_tree.new_project_dialog import NewProjectDialog
+from .ui.giscube_admin_dockwidget import GiscubeAdminDockWidget
+from .ui.server_item import ServerItem
+from .ui.project_item import ProjectItem
+from .ui.new_server_dialog import NewServerDialog
+from .ui.new_project_dialog import NewProjectDialog
 
 # Initialize Qt resources from file resources.py
 from .resources import *  # NOQA

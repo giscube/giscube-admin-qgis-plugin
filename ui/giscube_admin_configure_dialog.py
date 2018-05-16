@@ -7,7 +7,6 @@ that opens with the plugin.
 import os
 
 from PyQt5 import QtWidgets, uic
-# from PyQt5.QtCore import pyqtSignal
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'giscube_admin_configure_dialog_base.ui'))

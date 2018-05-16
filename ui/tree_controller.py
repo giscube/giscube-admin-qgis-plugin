@@ -4,8 +4,8 @@ This script contains the class TreeController: controlls the behavior of the
 items in the dock tree.
 """
 
-from .server_tree.server_item import ServerItem
-from .server_tree.project_item import ProjectItem
+from .server_item import ServerItem
+from .project_item import ProjectItem
 
 
 class TreeController:
