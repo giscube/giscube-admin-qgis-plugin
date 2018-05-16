@@ -41,6 +41,9 @@ class ProjectItem(QTreeWidgetItem):
             )
 
     def open(self):
+        """
+        Open the project that this item represents in the editor.
+        """
         def open_project():
             project = QgsProject.instance()
             self.path = self.qgis_server.download_project(self.id)

@@ -13,7 +13,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class PublishDialog(QtWidgets.QDialog, FORM_CLASS):
     """
-    Popup dialog that ask for the necessary data to publish a project.
+    Popup dialog to make or edit a project's publication.
     """
     def __init__(self, name, published, parent=None):
         super().__init__(parent=parent)
@@ -28,6 +28,9 @@ class PublishDialog(QtWidgets.QDialog, FORM_CLASS):
         )
 
     def values(self):
+        """
+        Returns a dictionary with the values of this dialog's widgets.
+        """
         values_dic = {
             'title': self.title.text(),
             'description': self.descr.toPlainText(),
