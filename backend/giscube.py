@@ -14,7 +14,7 @@ from .qgis_server import QgisServer
 class Giscube:
     """
     Giscube API client.
-    Handles the login and recives token. It can be saved in a vault.
+    Handles the login and receives token. It can be saved in a vault.
     """
     KEYRING_PREFIX = "giscube-admin-qgis-plugin-"
 
@@ -27,7 +27,7 @@ class Giscube:
         """
         Contructor. Sets up the initial state. Loads, if enabled, the tokens
         saved in the vault.
-        :param server_url: Base URL to the server to connect.
+        :param server_url: Base URL of the server to connect to.
         :type server_url: str
         :param client_id: Application OAuth client ID.
         :type client_id: str or unicode
@@ -63,6 +63,9 @@ class Giscube:
 
     @property
     def admin_webside(self):
+        """
+        URL to the server's OAuth's administration webside.
+        """
         return urljoin(self._server_url, OAuth.ADMIN_WEBSIDE)
 
     @property
@@ -78,7 +81,7 @@ class Giscube:
     @property
     def server_url(self):
         """
-        Base URL to the server which we are (or want to be) connected.
+        Base URL of the server which we are (or want to be) connected to.
         """
         return self._server_url
 

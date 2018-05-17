@@ -32,8 +32,8 @@ class QgisServer:
         """
         Returns a list with all the projects available.
 
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
@@ -56,8 +56,8 @@ class QgisServer:
 
         :param project_id: Project's ID in the server.
         :type project_id: int or str
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
@@ -89,8 +89,8 @@ class QgisServer:
         :type title: str
         :param path: Project's ID in the server.
         :type path: str or unicode
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
@@ -116,8 +116,8 @@ class QgisServer:
 
         :param project_id: Project's ID in the server.
         :type project_id: int or str
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
@@ -131,7 +131,7 @@ class QgisServer:
                         title, description, keywords, on_geoportal):
         """
         Publishes the project into a map service (or update the service data if
-        it already is published).
+        it is already published).
         Returns the created service ID.
 
         :param project_id: Project's ID in the server.
@@ -142,9 +142,9 @@ class QgisServer:
         :type description: str or unicode
         :param keywords: Comma separated list of keywords to add.
         :type keywords: str or unicode
-        :param on_geoportal: Should it published on the Geoportal?
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :param on_geoportal: Should it be published on the Geoportal?
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
@@ -169,8 +169,8 @@ class QgisServer:
 
         :param make_request: request function
         :type request: method
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
