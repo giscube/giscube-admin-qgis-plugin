@@ -13,10 +13,10 @@ from qgis.gui import QgsMessageBar
 
 from ..settings import Settings
 
+from ..backend import Unauthorized
+
 from ..async import Job
 from ..main_company import main_company
-
-from ..backend import Unauthorized
 
 from .loading_item import LoadingItem
 from .project_item import ProjectItem
@@ -77,9 +77,16 @@ class ServerItem(QTreeWidgetItem):
 
     @property
     def server_url(self):
+        """
+        Base URL to the server.
+        """
         return self.giscube.server_url
 
     def delete(self):
+        """
+        Remove this server instance and its data (including the saved) and
+        update the UI.
+        """
         # Remove tokens and prevent saving them again
         self.giscube.save_tokens = False
 
@@ -191,6 +198,9 @@ class ListProjectsJob(Job):
             main_company.list_job(self)
 
     def exception_risen(self, exception):
+        """
+        Handle the exception if anything goes wrong.
+        """
         try:
             super().exception_risen(exception)
         except Unauthorized:

@@ -13,7 +13,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class NewServerDialog(QtWidgets.QDialog, FORM_CLASS):
     """
-    Popup dialog that ask for the necessary data to make a new server
+    Popup dialog that asks for the necessary data to make a new server
     connection.
     """
     def __init__(self, parent=None):
@@ -22,6 +22,9 @@ class NewServerDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
 
     def values(self):
+        """
+        Returns a dictionary with the values of this dialog's widgets.
+        """
         values_dic = {
             'name': self.name.text(),
             'url': self.url.text(),

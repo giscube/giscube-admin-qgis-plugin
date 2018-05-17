@@ -16,8 +16,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class NewProjectDialog(QtWidgets.QDialog, FORM_CLASS):
     """
-    Popup dialog that ask for the necessary data to make a new server
-    connection.
+    Popup dialog to make or edit a project's data.
     """
     def __init__(self, giscube_admin, server=None, parent=None):
         super().__init__(parent=parent)

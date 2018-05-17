@@ -26,18 +26,18 @@ class QgisServer:
         :param token_handler: Main Giscube API client.
         :type token_handler: backend.Giscube
         """
-        self.__giscube = giscube
+        self.giscube = giscube
 
     def projects(self):
         """
         Returns a list with all the projects available.
 
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
-        if not self.__giscube.is_logged_in:
+        if not self.giscube.is_logged_in:
             raise Unauthorized()
 
         response = self.__get_result(self.__request_projects_list)
@@ -51,16 +51,17 @@ class QgisServer:
 
     def download_project(self, project_id):
         """
-        Downloads the project file and returns its path.
+        Downloads the project file.
+        Returns the path of the file.
 
         :param project_id: Project's ID in the server.
         :type project_id: int or str
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
-        if not self.__giscube.is_logged_in:
+        if not self.giscube.is_logged_in:
             raise Unauthorized()
 
         response = self.__get_result(self.__request_project, project_id)
@@ -88,12 +89,12 @@ class QgisServer:
         :type title: str
         :param path: Project's ID in the server.
         :type path: str or unicode
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
-        if not self.__giscube.is_logged_in:
+        if not self.giscube.is_logged_in:
             raise Unauthorized()
 
         with open(path, 'r') as f:
@@ -110,6 +111,16 @@ class QgisServer:
         return result.json()['id']
 
     def delete_project(self, project_id):
+        """
+        Deletes a project from the server.
+
+        :param project_id: Project's ID in the server.
+        :type project_id: int or str
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
+        :raises requests.exceptions.HTTPError: When the server responses with
+        an unexpected error status code
+        """
         self.__get_result(
             self.__delete_project,
             project_id,
@@ -118,6 +129,25 @@ class QgisServer:
 
     def publish_project(self, project_id,
                         title, description, keywords, on_geoportal):
+        """
+        Publishes the project into a map service (or update the service data if
+        it is already published).
+        Returns the created service ID.
+
+        :param project_id: Project's ID in the server.
+        :type project_id: int or str
+        :param title: Service's tile.
+        :type title: str
+        :param description: Service's description.
+        :type description: str or unicode
+        :param keywords: Comma separated list of keywords to add.
+        :type keywords: str or unicode
+        :param on_geoportal: Should it be published on the Geoportal?
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
+        :raises requests.exceptions.HTTPError: When the server responses with
+        an unexpected error status code
+        """
         result = self.__get_result(
             self.__publish_project,
             project_id,
@@ -139,17 +169,17 @@ class QgisServer:
 
         :param make_request: request function
         :type request: method
-        :raise Unauthorized: When the servers negates the credentials,
-        preventing to do the request
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
         response = make_request(*args)
         if response.status_code == Api.UNAUTHORIZED:
-            if not self.__giscube.has_refresh_token:
+            if not self.giscube.has_refresh_token:
                 raise Unauthorized()
 
-            self.__giscube.refresh_token()
+            self.giscube.refresh_token()
 
             response = make_request(*args)
             if response.status_code == Api.UNAUTHORIZED:
@@ -165,25 +195,25 @@ class QgisServer:
     def __request_projects_list(self):
         return requests.get(
             urljoin(
-                self.__giscube.server_url,
+                self.giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS),
             params={
-                'client_id': self.__giscube.client_id,
-                'access_token': self.__giscube.access_token,
+                'client_id': self.giscube.client_id,
+                'access_token': self.giscube.access_token,
             }
         )
 
     def __request_project(self, project_id):
         return requests.get(
             urljoin(
-                self.__giscube.server_url,
+                self.giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS,
                 project_id),
             params={
-                'client_id': self.__giscube.client_id,
-                'access_token': self.__giscube.access_token,
+                'client_id': self.giscube.client_id,
+                'access_token': self.giscube.access_token,
             }
         )
 
@@ -191,14 +221,14 @@ class QgisServer:
         if project_id is None:  # if need to create a new project
             request = requests.post
             url = urljoin(
-                self.__giscube.server_url,
+                self.giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS,
             )
         else:
             request = requests.put
             url = urljoin(
-                self.__giscube.server_url,
+                self.giscube.server_url,
                 Api.PATH,
                 Api.PROJECTS,
                 str(project_id),
@@ -207,8 +237,8 @@ class QgisServer:
         return request(
             url,
             data={
-                'client_id': self.__giscube.client_id,
-                'access_token': self.__giscube.access_token,
+                'client_id': self.giscube.client_id,
+                'access_token': self.giscube.access_token,
                 'id': project_id,
                 'name': title,
                 'data': qgis_project,
@@ -217,7 +247,7 @@ class QgisServer:
 
     def __delete_project(self, project_id):
         url = urljoin(
-            self.__giscube.server_url,
+            self.giscube.server_url,
             Api.PATH,
             Api.PROJECTS,
             str(project_id),
@@ -226,15 +256,15 @@ class QgisServer:
         return requests.delete(
             url,
             data={
-                'client_id': self.__giscube.client_id,
-                'access_token': self.__giscube.access_token,
+                'client_id': self.giscube.client_id,
+                'access_token': self.giscube.access_token,
             }
         )
 
     def __publish_project(self, project_id,
                           title, description, keywords, on_geoportal):
         url = urljoin(
-            self.__giscube.server_url,
+            self.giscube.server_url,
             Api.PATH,
             Api.PROJECTS,
             str(project_id),
@@ -243,8 +273,8 @@ class QgisServer:
         return requests.post(
             url,
             data={
-                'client_id': self.__giscube.client_id,
-                'access_token': self.__giscube.access_token,
+                'client_id': self.giscube.client_id,
+                'access_token': self.giscube.access_token,
                 'name': "project",
                 'title': title,
                 'description': description,

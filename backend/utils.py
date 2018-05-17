@@ -25,6 +25,15 @@ def urljoin(base, *parts):
 
 
 def is_url_valid(url, allowed_schemes):
+    """
+    Checks if the URL is valid in the allowed schemes.
+    Returns it is a valid URL.
+
+    :param url: The URL to check.
+    :type url: str
+    :param allowed_schemes: A list of allowed schemes in the URL.
+    :type allowed_schemes: list
+    """
     parsed = urlparse(url)
     is_valid = (parsed.scheme in allowed_schemes)
     return is_valid

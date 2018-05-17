@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script contains LoginDialog: A dialog popup for the login credentials.
+This script contains LoginDialog.
 """
 
 import os
@@ -13,7 +13,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class LoginDialog(QtWidgets.QDialog, FORM_CLASS):
     """
-    Popup dialog that ask for the necessary data to login into a server.
+    Popup dialog that asks for the necessary data to login into a server.
     """
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -21,6 +21,9 @@ class LoginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
 
     def values(self):
+        """
+        Returns a dictionary with the values of this dialog's widgets.
+        """
         values_dic = {
             'username': self.username.text(),
             'password': self.password.text(),
