@@ -128,7 +128,8 @@ class QgisServer:
         )
 
     def publish_project(self, project_id,
-                        title, description, keywords, on_geoportal):
+                        title, description, keywords, on_geoportal,
+                        category=None):
         """
         Publishes the project into a map service (or update the service data if
         it is already published).
@@ -143,6 +144,9 @@ class QgisServer:
         :param keywords: Comma separated list of keywords to add.
         :type keywords: str or unicode
         :param on_geoportal: Should it be published on the Geoportal?
+        :type on_geoportal: bool
+        :param category: Category of the publication.
+        :type category: int or None
         :raise Unauthorized: When the request is not successful because the
         server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
@@ -155,6 +159,7 @@ class QgisServer:
             description,
             keywords,
             on_geoportal,
+            category,
         )
         return result["service"]
 
@@ -228,7 +233,8 @@ class QgisServer:
         )
 
     def __publish_project(self, project_id,
-                          title, description, keywords, on_geoportal):
+                          title, description, keywords, on_geoportal,
+                          category):
         url = urljoin(
             self.giscube.server_url,
             Api.PATH,
@@ -246,5 +252,6 @@ class QgisServer:
                 'description': description,
                 'keywords': keywords,
                 'visible_on_geoportal': on_geoportal,
+                'category': category,
             }
         )
