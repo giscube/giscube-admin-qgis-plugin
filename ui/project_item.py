@@ -3,10 +3,11 @@
 This script contains ProjectItem.
 """
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
 
 from qgis.core import QgsProject
+
+from ..utils import safe_close
 
 from .publish_dialog import PublishDialog
 
@@ -63,12 +64,7 @@ class ProjectItem(QTreeWidgetItem):
             project.readProject.disconnect(close_project)
             project.projectSaved.disconnect(save_project)
 
-        self.iface.newProjectCreated.connect(
-            open_project,
-            Qt.DirectConnection)
-        self.iface.newProject(True)
-        self.iface.newProjectCreated.disconnect(
-            open_project)
+        safe_close(self.iface, open_project)
 
     def _double_clicked(self):
         self.open()

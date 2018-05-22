@@ -5,10 +5,11 @@ This script contains NewServerDialog.
 import os
 
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog
 
 from qgis.core import QgsProject
+
+from ..utils import safe_close
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'new_project_dialog_base.ui'))
@@ -47,15 +48,10 @@ class NewProjectDialog(QtWidgets.QDialog, FORM_CLASS):
         self.accept()
 
     def _add_blank_project(self):
-        self.giscube_admin.iface.newProjectCreated.connect(
-            lambda: self._add_current_project(),
-            Qt.DirectConnection)
-        self.giscube_admin.iface.newProject(True)
+        safe_close(self.giscube_admin.iface, self._add_current_project)
 
     def _add_file_project(self):
         def open_project():
-            self.giscube_admin.iface.newProjectCreated.disconnect(
-                open_project)
             project = QgsProject.instance()
             path = dialog.selectedFiles()[0]
             project.read(path)
@@ -65,7 +61,4 @@ class NewProjectDialog(QtWidgets.QDialog, FORM_CLASS):
         dialog.setFileMode(QFileDialog.ExistingFile)
         dialog.setNameFilter("QGIS project (*.qgs)")
         if dialog.exec_():
-            self.giscube_admin.iface.newProjectCreated.connect(
-                open_project,
-                Qt.DirectConnection)
-            self.giscube_admin.iface.newProject(True)
+            safe_close(self.giscube_admin.iface, self.open_project)
