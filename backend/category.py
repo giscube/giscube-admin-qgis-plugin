@@ -26,7 +26,6 @@ class CategoryApi:
         categories = {}
         json = self.giscube.try_request(self._get_categories)
         for o in json:
-            print(o)
             categories[o['id']] = Category(o['name'], o['parent'])
         return categories
 
