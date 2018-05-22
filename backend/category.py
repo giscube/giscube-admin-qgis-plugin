@@ -18,11 +18,6 @@ class Category:
 class CategoryApi:
     def __init__(self, giscube):
         self.giscube = giscube
-        self._categories = {}
-
-    @property
-    def cache(self):
-        return self._categories
 
     def get_categories(self):
         """
@@ -33,8 +28,6 @@ class CategoryApi:
         for o in json:
             print(o)
             categories[o['id']] = Category(o['name'], o['parent'])
-
-        self._categories = categories
         return categories
 
     def _get_categories(self):
