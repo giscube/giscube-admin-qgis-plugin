@@ -48,7 +48,7 @@ class Giscube:
         self.__name = name
         self._keyring_client_name = self.KEYRING_PREFIX + name
 
-        self.__categories = CategoryApi(self)
+        self.__category_api = CategoryApi(self)
 
         self.__load_tokens()
 
@@ -228,14 +228,8 @@ class Giscube:
             pass
 
     @property
-    def categories(self):
-        return self.__categories
-
-    def update_categories(self):
-        """
-        Updates the categories cache and returns it.
-        """
-        return self.__categories.get_categories()
+    def category_api(self):
+        return self.__category_api
 
     def try_request(self, make_request, *args, process_result=True):
         """
