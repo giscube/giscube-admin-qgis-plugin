@@ -9,6 +9,7 @@ import keyring
 from .constants import OAuth, Api, Vault
 from .exceptions import Unauthorized
 from .utils import urljoin
+from .category import CategoryApi
 from .qgis_server import QgisServer
 
 
@@ -46,6 +47,8 @@ class Giscube:
         self._save = save_tokens
         self.__name = name
         self._keyring_client_name = self.KEYRING_PREFIX + name
+
+        self.__categories = CategoryApi(self)
 
         self.__load_tokens()
 
@@ -223,6 +226,16 @@ class Giscube:
             )
         except:
             pass
+
+    @property
+    def categories(self):
+        return self.__categories
+
+    def update_categories(self):
+        """
+        Updates the categories cache and returns it.
+        """
+        return self.__categories.get_categories()
 
     def try_request(self, make_request, *args, process_result=True):
         """
