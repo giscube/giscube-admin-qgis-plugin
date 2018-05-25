@@ -88,7 +88,7 @@ class ProjectItem(QTreeWidgetItem):
         menu.exec_(pos)
 
     def _publish_popup(self):
-        dialog = PublishDialog(self.name, self.published)
+        dialog = PublishDialog(self)
         if dialog.exec_():
             published = self.qgis_server.publish_project(
                 self.id,
