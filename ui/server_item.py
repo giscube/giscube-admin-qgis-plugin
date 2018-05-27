@@ -109,14 +109,14 @@ class ServerItem(QTreeWidgetItem):
         menu.addAction(refresh_action)
         refresh_action.triggered.connect(refresh)
 
-        def log_out():
+        def logout():
             self.giscube.delete_tokens()
             self.setExpanded(False)
             self.takeChildren()
             self.addChild(LoadingItem())
-        log_out_action = QAction('Log out')
-        menu.addAction(log_out_action)
-        log_out_action.triggered.connect(log_out)
+        logout_action = QAction('Logout from server')
+        menu.addAction(logout_action)
+        logout_action.triggered.connect(logout)
 
         def admin_webside():
             QDesktopServices.openUrl(QUrl(self.giscube.admin_webside))
