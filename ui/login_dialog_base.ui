@@ -39,15 +39,12 @@
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="save_tokens">
+    <widget class="QCheckBox" name="discard_tokens">
      <property name="toolTip">
       <string>Keep the server logged in even after closing QGIS.</string>
      </property>
      <property name="text">
-      <string>Keep logged in</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
+      <string>Use credentials only for this QGIS session</string>
      </property>
     </widget>
    </item>
@@ -95,7 +92,7 @@
  <tabstops>
   <tabstop>username</tabstop>
   <tabstop>password</tabstop>
-  <tabstop>save_tokens</tabstop>
+  <tabstop>discard_tokens</tabstop>
  </tabstops>
  <resources/>
  <connections>
