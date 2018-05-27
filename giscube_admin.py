@@ -78,6 +78,12 @@ class GiscubeAdmin:
         self.pluginIsActive = False
         self.dockwidget = None
 
+        def load():
+            if self.settings.is_open:
+                self.open_action.trigger()
+
+        iface.initializationCompleted.connect(load)
+
     def server_names(self):
         """
         Names of the currently connected servers.
@@ -179,7 +185,7 @@ class GiscubeAdmin:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         icon_path = ':/plugins/GiscubeAdmin/icon.png'
-        self.add_action(
+        self.open_action = self.add_action(
             icon_path,
             text=self.tr(u'Open Giscube Admin'),
             callback=self.run,
@@ -204,6 +210,7 @@ class GiscubeAdmin:
         # when closing the docked window:
         # self.dockwidget = None
 
+        self.settings.is_open = False
         self.pluginIsActive = False
 
     def unload(self):
@@ -217,11 +224,18 @@ class GiscubeAdmin:
         # remove the toolbar
         del self.toolbar
 
+        if self.dockwidget is not None:
+            self.dockwidget.hide()
+            self.iface.removeDockWidget(self.dockwidget)
+            del self.dockwidget
+            self.dockwidget = None
+
     def run(self):
         """Run method that loads and starts the plugin"""
 
         if not self.pluginIsActive:
             self.pluginIsActive = True
+            self.settings.is_open = True
 
             # dockwidget may not exist if:
             #    first run of plugin
@@ -234,7 +248,8 @@ class GiscubeAdmin:
 
             # show the dockwidget
             self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
-            self.dockwidget.show()
+
+        self.dockwidget.show()
 
     def make_dockwidget(self):
         """
@@ -256,7 +271,6 @@ class GiscubeAdmin:
 
     def new_server_popup(self):
         """
-from .new_project_dialog import NewProjectDialog
         Opens a new server dialog.
         """
         dialog = NewServerDialog(self.dockwidget)
