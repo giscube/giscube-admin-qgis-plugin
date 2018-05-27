@@ -88,7 +88,7 @@ class ServerItem(QTreeWidgetItem):
         update the UI.
         """
         # Remove tokens and prevent saving them again
-        self.giscube.save_tokens = False
+        self.giscube.delete_tokens()
 
         # Remove from configuration file
         key = self.name+'/url'
@@ -105,13 +105,22 @@ class ServerItem(QTreeWidgetItem):
 
         def refresh():
             main_company.list_job(ListProjectsJob(self))
-        refresh_action = QAction('&Refresh projects')
+        refresh_action = QAction('Refresh projects')
         menu.addAction(refresh_action)
         refresh_action.triggered.connect(refresh)
 
+        def log_out():
+            self.giscube.delete_tokens()
+            self.setExpanded(False)
+            self.takeChildren()
+            self.addChild(LoadingItem())
+        log_out_action = QAction('Log out')
+        menu.addAction(log_out_action)
+        log_out_action.triggered.connect(log_out)
+
         def admin_webside():
             QDesktopServices.openUrl(QUrl(self.giscube.admin_webside))
-        admin_webside_action = QAction('&Open admin webside')
+        admin_webside_action = QAction('Open admin webside')
         menu.addAction(admin_webside_action)
         admin_webside_action.triggered.connect(admin_webside)
 
