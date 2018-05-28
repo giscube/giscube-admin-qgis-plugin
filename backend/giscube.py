@@ -6,8 +6,10 @@ Package containing the Giscube API client.
 import requests
 import keyring
 
-from .constants import OAuth, Vault
+from .constants import OAuth, Api, Vault
+from .exceptions import Unauthorized
 from .utils import urljoin
+from .category import CategoryApi
 from .qgis_server import QgisServer
 
 
@@ -45,6 +47,8 @@ class Giscube:
         self._save = save_tokens
         self.__name = name
         self._keyring_client_name = self.KEYRING_PREFIX + name
+
+        self.__category_api = CategoryApi(self)
 
         self.__load_tokens()
 
@@ -222,6 +226,44 @@ class Giscube:
             )
         except:
             pass
+
+    @property
+    def category_api(self):
+        return self.__category_api
+
+    def try_request(self, make_request, *args, process_result=True):
+        """
+        Tries to get the a request result.
+
+        It makes the request (which must be a function that returns the
+        result). If it fails, it tries to refresh the token and tries again.
+
+        Returns the parsed json object.
+
+        :param make_request: request function
+        :type request: method
+        :raise Unauthorized: When the request is not successful because the
+        server didn't accept the credentials.
+        :raises requests.exceptions.HTTPError: When the server responses with
+        an unexpected error status code
+        """
+        response = make_request(*args)
+        if response.status_code == Api.UNAUTHORIZED:
+            if not self.has_refresh_token:
+                raise Unauthorized()
+
+            self.refresh_token()
+
+            response = make_request(*args)
+            if response.status_code == Api.UNAUTHORIZED:
+                raise Unauthorized()
+
+        response.raise_for_status()
+
+        if process_result:
+            return response.json()
+        else:
+            return response
 
     def __load_tokens(self):
         """

@@ -21,6 +21,7 @@ class Api:
     PROJECTS = '/qgisserver/project'
     PUBLISH = '/publish'
     DISABLE_PUBLICATION = '/disable'
+    CATEGORY = '/giscube/category'
     UNAUTHORIZED = 401
 
 

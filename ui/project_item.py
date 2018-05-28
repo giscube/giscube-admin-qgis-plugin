@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
 
 from qgis.core import QgsProject
 
-from ..utils import safe_close
+from ..utils import safe_close, str2int
 
 from .publish_dialog import PublishDialog
 
@@ -88,10 +88,11 @@ class ProjectItem(QTreeWidgetItem):
         menu.exec_(pos)
 
     def _publish_popup(self):
-        dialog = PublishDialog(self.name, self.published)
+        dialog = PublishDialog(self)
         if dialog.exec_():
             published = self.qgis_server.publish_project(
                 self.id,
                 **dialog.values()
             )
+            published['category'] = str2int(published['category'])
             self.published = published

@@ -40,7 +40,7 @@ class QgisServer:
         if not self.giscube.is_logged_in:
             raise Unauthorized()
 
-        response = self.__get_result(self.__request_projects_list)
+        response = self.giscube.try_request(self.__request_projects_list)
         projects = {
             result['id']: result['name'] for result in response['results']
         }
@@ -64,7 +64,7 @@ class QgisServer:
         if not self.giscube.is_logged_in:
             raise Unauthorized()
 
-        response = self.__get_result(self.__request_project, project_id)
+        response = self.giscube.try_request(self.__request_project, project_id)
 
         t = '{:.0f}'.format(time.time())
         path = QDir.tempPath() + (
@@ -100,7 +100,7 @@ class QgisServer:
         with open(path, 'r') as f:
             qgis_project = f.read()
 
-        result = self.__get_result(
+        result = self.giscube.try_request(
             self.__push_project,
             project_id,
             title,
@@ -121,14 +121,15 @@ class QgisServer:
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
-        self.__get_result(
+        self.giscube.try_request(
             self.__delete_project,
             project_id,
             process_result=False,
         )
 
     def publish_project(self, project_id,
-                        title, description, keywords, on_geoportal):
+                        title, description, keywords, on_geoportal,
+                        category=None):
         """
         Publishes the project into a map service (or update the service data if
         it is already published).
@@ -143,54 +144,24 @@ class QgisServer:
         :param keywords: Comma separated list of keywords to add.
         :type keywords: str or unicode
         :param on_geoportal: Should it be published on the Geoportal?
+        :type on_geoportal: bool
+        :param category: Category of the publication.
+        :type category: int or None
         :raise Unauthorized: When the request is not successful because the
         server didn't accept the credentials.
         :raises requests.exceptions.HTTPError: When the server responses with
         an unexpected error status code
         """
-        result = self.__get_result(
+        result = self.giscube.try_request(
             self.__publish_project,
             project_id,
             title,
             description,
             keywords,
             on_geoportal,
+            category,
         )
         return result["service"]
-
-    def __get_result(self, make_request, *args, process_result=True):
-        """
-        Tries to get the a request result.
-
-        It makes the request (which must be a function that returns the
-        result). If it fails, it tries to refresh the token and tries again.
-
-        Returns the parsed json object.
-
-        :param make_request: request function
-        :type request: method
-        :raise Unauthorized: When the request is not successful because the
-        server didn't accept the credentials.
-        :raises requests.exceptions.HTTPError: When the server responses with
-        an unexpected error status code
-        """
-        response = make_request(*args)
-        if response.status_code == Api.UNAUTHORIZED:
-            if not self.giscube.has_refresh_token:
-                raise Unauthorized()
-
-            self.giscube.refresh_token()
-
-            response = make_request(*args)
-            if response.status_code == Api.UNAUTHORIZED:
-                raise Unauthorized()
-
-        response.raise_for_status()
-
-        if process_result:
-            return response.json()
-        else:
-            return response
 
     def __request_projects_list(self):
         return requests.get(
@@ -262,7 +233,8 @@ class QgisServer:
         )
 
     def __publish_project(self, project_id,
-                          title, description, keywords, on_geoportal):
+                          title, description, keywords, on_geoportal,
+                          category):
         url = urljoin(
             self.giscube.server_url,
             Api.PATH,
@@ -280,5 +252,6 @@ class QgisServer:
                 'description': description,
                 'keywords': keywords,
                 'visible_on_geoportal': on_geoportal,
+                'category': category,
             }
         )
