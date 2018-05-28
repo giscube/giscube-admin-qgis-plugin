@@ -88,7 +88,7 @@ class ServerItem(QTreeWidgetItem):
         update the UI.
         """
         # Remove tokens and prevent saving them again
-        self.giscube.delete_tokens()
+        self.giscube.remove_tokens()
 
         # Remove from configuration file
         key = self.name+'/url'
@@ -110,7 +110,7 @@ class ServerItem(QTreeWidgetItem):
         refresh_action.triggered.connect(refresh)
 
         def logout():
-            self.giscube.delete_tokens()
+            self.giscube.remove_tokens()
             self.setExpanded(False)
             self.takeChildren()
             self.addChild(LoadingItem())
