@@ -25,7 +25,10 @@ class Settings:
     @property
     def is_open(self):
         v = self.__settings.value(self.IS_OPEN_SETTING, 'f')
-        return v[0] in ['t', 'T']
+        if isinstance(v, str):
+            return v[0] in ['t', 'T']
+        else:
+            return v
 
     @is_open.setter
     def is_open(self, v):
