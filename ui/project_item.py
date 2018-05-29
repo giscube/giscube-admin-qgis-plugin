@@ -3,7 +3,7 @@
 This script contains ProjectItem.
 """
 
-from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem
 
 from qgis.core import QgsProject
 

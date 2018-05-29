@@ -47,8 +47,6 @@ class ServerItem(QTreeWidgetItem):
         """
         super().__init__()
 
-        print(self)
-
         self.giscube_admin = giscube_admin
         self.iface = giscube_admin.iface
         self.giscube = conn
