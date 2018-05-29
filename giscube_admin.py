@@ -276,6 +276,12 @@ class GiscubeAdmin:
         dialog = NewServerDialog(self.dockwidget)
         if dialog.exec_():
             result = dialog.values()
+            if result['name'] in ServerItem.saved_servers.childGroups():
+                self.iface.messageBar().pushMessage(
+                    "A server must have a unique name.",
+                    QgsMessageBar.Error
+                )
+                return
             new_conn = Giscube(
                 result['url'],
                 self.CLIENT_ID,
