@@ -11,7 +11,7 @@ from PyQt5.QtCore import QSettings, QDir, Qt, \
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
-from qgis.core import QgsProject
+from qgis.core import Qgis, QgsProject
 from qgis.gui import QgsMessageBar
 
 from .backend import Giscube
@@ -279,7 +279,7 @@ class GiscubeAdmin:
             if result['name'] in ServerItem.saved_servers.childGroups():
                 self.iface.messageBar().pushMessage(
                     "A server must have a unique name.",
-                    QgsMessageBar.Error
+                    Qgis.Critical
                 )
                 return
             new_conn = Giscube(

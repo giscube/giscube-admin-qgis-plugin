@@ -9,6 +9,7 @@ from PyQt5.QtCore import QSettings, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
 
+from qgis.core import Qgis
 from qgis.gui import QgsMessageBar
 
 from ..settings import Settings
@@ -136,6 +137,7 @@ class ServerItem(QTreeWidgetItem):
         if isinstance(self.child(0), LoadingItem):
             if not self.giscube.is_logged_in:
                 if not self._login_popup():
+                    self.setExpanded(False)
                     return
             main_company.list_job(ListProjectsJob(self))
 
@@ -147,8 +149,8 @@ class ServerItem(QTreeWidgetItem):
         except RequestException as e:
             self.iface.messageBar().pushMessage(
                 "Error",
-                "No s'ha pogut connectar al servidor",
-                QgsMessageBar.ERROR
+                "Unable to connect to the server",
+                Qgis.Critical
             )
             self.giscube.save_tokens = False
             return {'finished': True, 'correct': False}
