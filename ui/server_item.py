@@ -7,7 +7,7 @@ from requests.exceptions import RequestException
 
 from PyQt5.QtCore import QSettings, QUrl
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem
 
 from qgis.core import Qgis
 from qgis.gui import QgsMessageBar
@@ -47,6 +47,8 @@ class ServerItem(QTreeWidgetItem):
         """
         super().__init__()
 
+        print(self)
+
         self.giscube_admin = giscube_admin
         self.iface = giscube_admin.iface
         self.giscube = conn
@@ -55,12 +57,6 @@ class ServerItem(QTreeWidgetItem):
         tree.addTopLevelItem(self)
 
         self.setText(0, self.name)
-
-        self.new_project = QPushButton('New Project')
-        tree.setItemWidget(self, 1, self.new_project)
-        self.new_project.clicked.connect(
-            lambda: self.giscube_admin.new_project_popup(self.name)
-            )
 
         key = self.name+'/url'
         if not self.saved_servers.contains(key):
@@ -101,14 +97,14 @@ class ServerItem(QTreeWidgetItem):
         index = self._tree.indexOfTopLevelItem(self)
         self._tree.takeTopLevelItem(index)
 
+    def refresh_projects(self):
+        main_company.list_job(ListProjectsJob(self))
+
+    def new_project_dialog(self):
+        self.giscube_admin.new_project_popup(self.name)
+
     def context_menu(self, pos):
         menu = QMenu()
-
-        def refresh():
-            main_company.list_job(ListProjectsJob(self))
-        refresh_action = QAction('Refresh projects')
-        menu.addAction(refresh_action)
-        refresh_action.triggered.connect(refresh)
 
         def logout():
             self.giscube.remove_tokens()

@@ -35,12 +35,6 @@ class ProjectItem(QTreeWidgetItem):
         server_item.addChild(self)
         self.setText(0, self.name)
 
-        self.publish = QPushButton('Publish')
-        server_item.treeWidget().setItemWidget(self, 1, self.publish)
-        self.publish.clicked.connect(
-            lambda: self._publish_popup()
-            )
-
     def open(self):
         """
         Open the project that this item represents in the editor.
