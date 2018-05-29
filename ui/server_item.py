@@ -139,31 +139,37 @@ class ServerItem(QTreeWidgetItem):
                     return
             main_company.list_job(ListProjectsJob(self))
 
-    def _login_popup(self):
-        dialog = LoginDialog(self.treeWidget())
-        while True:
+    def _try_login(self, username, password, save_tokens):
+        try:
+            if self.giscube.login(username, password):
+                self.giscube.save_tokens = save_tokens
+                return {'finished': True, 'correct': True}
+        except RequestException as e:
+            self.iface.messageBar().pushMessage(
+                "Error",
+                "No s'ha pogut connectar al servidor",
+                QgsMessageBar.ERROR
+            )
+            self.giscube.save_tokens = False
+            return {'finished': True, 'correct': False}
+        return {'finished': False, 'correct': False}
+
+    def _login_popup(self, retry=False):
+        dialog = LoginDialog(self._tree)
+        status = {'finished': False, 'correct': not retry}
+        while not status['finished']:
+            if not status['correct']:
+                dialog.error.setText("Incorrect username or password.")
             if not dialog.exec_():
                 self._tree.collapseItem(self)
                 return False
-
             result = dialog.values()
-            self.giscube.save_tokens = False
-            try:
-                if self.giscube.login(
-                        result['username'],
-                        result['password']):
-                    self.giscube.save_tokens = result['save_tokens']
-                    break
-                else:
-                    dialog.error.setText("Incorrect username or password.")
-            except RequestException as e:
-                self.iface.messageBar().pushMessage(
-                    "Error",
-                    "No s'ha pogut connectar al servidor",
-                    QgsMessageBar.ERROR
+            status = self._try_login(
+                result['username'],
+                result['password'],
+                result['save_tokens'],
                 )
-
-        return True
+        return status['correct']
 
 
 class ListProjectsJob(Job):

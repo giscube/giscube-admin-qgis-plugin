@@ -282,11 +282,23 @@ class GiscubeAdmin:
                 False,
                 result['name'],
             )
-            ServerItem(
+            si = ServerItem(
                 new_conn,
                 self.dockwidget.servers,
                 self,
             )
+
+            # try logging in
+            user = result['username']
+            pw = result['password']
+            if (
+                (user is not None and user != '')
+                or
+                (pw is not None and pw != '')
+            ):
+                r = si._try_login(user, pw, result['save_tokens'])
+                if not r['finished']:
+                    si._login_popup(True)
 
     def new_project_popup(self, default_server=None):
         dialog = NewProjectDialog(self, default_server)
