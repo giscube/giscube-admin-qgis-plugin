@@ -7,7 +7,7 @@ from requests.exceptions import RequestException
 
 from PyQt5.QtCore import QSettings, QUrl
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QMessageBox
 
 from qgis.core import Qgis
 from qgis.gui import QgsMessageBar
@@ -120,7 +120,14 @@ class ServerItem(QTreeWidgetItem):
         admin_webside_action.triggered.connect(admin_webside)
 
         def close():
-            self.delete()
+            confirm_dialog = QMessageBox(
+                QMessageBox.Question,
+                "Confirm server removal",
+                "Do you really want to remove this server?",
+                QMessageBox.Yes | QMessageBox.No,
+            )
+            if confirm_dialog.exec_() == QMessageBox.Yes:
+                self.delete()
         close_action = QAction('Remove server')
         menu.addAction(close_action)
         close_action.triggered.connect(close)
