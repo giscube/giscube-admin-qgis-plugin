@@ -28,5 +28,8 @@ class NewServerDialog(QtWidgets.QDialog, FORM_CLASS):
         values_dic = {
             'name': self.name.text(),
             'url': self.url.text(),
+            'username': self.username.text(),
+            'password': self.password.text(),
+            'save_tokens': not self.discard_tokens.isChecked(),
         }
         return values_dic

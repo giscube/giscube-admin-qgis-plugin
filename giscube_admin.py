@@ -11,7 +11,7 @@ from PyQt5.QtCore import QSettings, QDir, Qt, \
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
-from qgis.core import QgsProject
+from qgis.core import Qgis, QgsProject
 from qgis.gui import QgsMessageBar
 
 from .backend import Giscube
@@ -276,17 +276,35 @@ class GiscubeAdmin:
         dialog = NewServerDialog(self.dockwidget)
         if dialog.exec_():
             result = dialog.values()
+            if result['name'] in ServerItem.saved_servers.childGroups():
+                self.iface.messageBar().pushMessage(
+                    "A server must have a unique name.",
+                    Qgis.Critical
+                )
+                return
             new_conn = Giscube(
                 result['url'],
                 self.CLIENT_ID,
                 False,
                 result['name'],
             )
-            ServerItem(
+            si = ServerItem(
                 new_conn,
                 self.dockwidget.servers,
                 self,
             )
+
+            # try logging in
+            user = result['username']
+            pw = result['password']
+            if (
+                (user is not None and user != '')
+                or
+                (pw is not None and pw != '')
+            ):
+                r = si._try_login(user, pw, result['save_tokens'])
+                if not r['finished']:
+                    si._login_popup(True)
 
     def new_project_popup(self, default_server=None):
         dialog = NewProjectDialog(self, default_server)

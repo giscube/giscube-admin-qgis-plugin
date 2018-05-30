@@ -7,8 +7,9 @@ from requests.exceptions import RequestException
 
 from PyQt5.QtCore import QSettings, QUrl
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QMessageBox
 
+from qgis.core import Qgis
 from qgis.gui import QgsMessageBar
 
 from ..settings import Settings
@@ -55,12 +56,6 @@ class ServerItem(QTreeWidgetItem):
 
         self.setText(0, self.name)
 
-        self.new_project = QPushButton('New Project')
-        tree.setItemWidget(self, 1, self.new_project)
-        self.new_project.clicked.connect(
-            lambda: self.giscube_admin.new_project_popup(self.name)
-            )
-
         key = self.name+'/url'
         if not self.saved_servers.contains(key):
             self.saved_servers.setValue(key, self.giscube.server_url)
@@ -88,7 +83,7 @@ class ServerItem(QTreeWidgetItem):
         update the UI.
         """
         # Remove tokens and prevent saving them again
-        self.giscube.delete_tokens()
+        self.giscube.remove_tokens()
 
         # Remove from configuration file
         key = self.name+'/url'
@@ -100,17 +95,17 @@ class ServerItem(QTreeWidgetItem):
         index = self._tree.indexOfTopLevelItem(self)
         self._tree.takeTopLevelItem(index)
 
+    def refresh_projects(self):
+        main_company.list_job(ListProjectsJob(self))
+
+    def new_project_dialog(self):
+        self.giscube_admin.new_project_popup(self.name)
+
     def context_menu(self, pos):
         menu = QMenu()
 
-        def refresh():
-            main_company.list_job(ListProjectsJob(self))
-        refresh_action = QAction('Refresh projects')
-        menu.addAction(refresh_action)
-        refresh_action.triggered.connect(refresh)
-
         def logout():
-            self.giscube.delete_tokens()
+            self.giscube.remove_tokens()
             self.setExpanded(False)
             self.takeChildren()
             self.addChild(LoadingItem())
@@ -125,7 +120,14 @@ class ServerItem(QTreeWidgetItem):
         admin_webside_action.triggered.connect(admin_webside)
 
         def close():
-            self.delete()
+            confirm_dialog = QMessageBox(
+                QMessageBox.Question,
+                "Confirm server removal",
+                "Do you really want to remove this server?",
+                QMessageBox.Yes | QMessageBox.No,
+            )
+            if confirm_dialog.exec_() == QMessageBox.Yes:
+                self.delete()
         close_action = QAction('Remove server')
         menu.addAction(close_action)
         close_action.triggered.connect(close)
@@ -136,34 +138,41 @@ class ServerItem(QTreeWidgetItem):
         if isinstance(self.child(0), LoadingItem):
             if not self.giscube.is_logged_in:
                 if not self._login_popup():
+                    self.setExpanded(False)
                     return
             main_company.list_job(ListProjectsJob(self))
 
-    def _login_popup(self):
-        dialog = LoginDialog(self.treeWidget())
-        while True:
+    def _try_login(self, username, password, save_tokens):
+        try:
+            if self.giscube.login(username, password):
+                self.giscube.save_tokens = save_tokens
+                return {'finished': True, 'correct': True}
+        except RequestException as e:
+            self.iface.messageBar().pushMessage(
+                "Error",
+                "Unable to connect to the server",
+                Qgis.Critical
+            )
+            self.giscube.save_tokens = False
+            return {'finished': True, 'correct': False}
+        return {'finished': False, 'correct': False}
+
+    def _login_popup(self, retry=False):
+        dialog = LoginDialog(self._tree)
+        status = {'finished': False, 'correct': not retry}
+        while not status['finished']:
+            if not status['correct']:
+                dialog.error.setText("Incorrect username or password.")
             if not dialog.exec_():
                 self._tree.collapseItem(self)
                 return False
-
             result = dialog.values()
-            self.giscube.save_tokens = False
-            try:
-                if self.giscube.login(
-                        result['username'],
-                        result['password']):
-                    self.giscube.save_tokens = result['save_tokens']
-                    break
-                else:
-                    dialog.error.setText("Incorrect username or password.")
-            except RequestException as e:
-                self.iface.messageBar().pushMessage(
-                    "Error",
-                    "No s'ha pogut connectar al servidor",
-                    QgsMessageBar.ERROR
+            status = self._try_login(
+                result['username'],
+                result['password'],
+                result['save_tokens'],
                 )
-
-        return True
+        return status['correct']
 
 
 class ListProjectsJob(Job):

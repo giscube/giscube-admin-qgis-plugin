@@ -3,7 +3,7 @@
 This script contains ProjectItem.
 """
 
-from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QPushButton
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QMessageBox
 
 from qgis.core import QgsProject
 
@@ -34,12 +34,6 @@ class ProjectItem(QTreeWidgetItem):
 
         server_item.addChild(self)
         self.setText(0, self.name)
-
-        self.publish = QPushButton('Publish')
-        server_item.treeWidget().setItemWidget(self, 1, self.publish)
-        self.publish.clicked.connect(
-            lambda: self._publish_popup()
-            )
 
     def open(self):
         """
@@ -79,8 +73,16 @@ class ProjectItem(QTreeWidgetItem):
         open_action.triggered.connect(open_)
 
         def delete():
-            self.qgis_server.delete_project(self.id)
-            self.server_item.removeChild(self)
+            confirm_dialog = QMessageBox(
+                QMessageBox.Question,
+                "Confirm project delete",
+                "Do you really want to delete this project?\n"
+                "It will be removed forever",
+                QMessageBox.Yes | QMessageBox.No,
+            )
+            if confirm_dialog.exec_() == QMessageBox.Yes:
+                self.qgis_server.delete_project(self.id)
+                self.server_item.removeChild(self)
         delete_action = QAction('Delete project')
         menu.addAction(delete_action)
         delete_action.triggered.connect(delete)
