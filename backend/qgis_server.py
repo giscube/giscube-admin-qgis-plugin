@@ -199,6 +199,12 @@ class QgisServer:
                 Api.PATH,
                 Api.PROJECTS,
             )
+            payload = {
+                'client_id': self.giscube.client_id,
+                'access_token': self.giscube.access_token,
+                'name': title,
+                'data': qgis_project,
+            }
         else:
             request = requests.put
             url = urljoin(
@@ -210,7 +216,6 @@ class QgisServer:
             payload = {
                 'client_id': self.giscube.client_id,
                 'access_token': self.giscube.access_token,
-                'id': project_id,
                 'name': title,
             }
             if qgis_project is not None:
