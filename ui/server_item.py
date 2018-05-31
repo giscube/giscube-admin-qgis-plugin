@@ -104,6 +104,20 @@ class ServerItem(QTreeWidgetItem):
     def context_menu(self, pos):
         menu = QMenu()
 
+        def refresh():
+            self.refresh_projects
+        refresh_action = QAction('Refresh projects list')
+        menu.addAction(refresh_action)
+        refresh_action.triggered.connect(refresh)
+
+        def web_control_panel():
+            QDesktopServices.openUrl(QUrl(self.giscube.admin_webside))
+        web_control_panel_action = QAction('Open Web Control Panel')
+        menu.addAction(web_control_panel_action)
+        web_control_panel_action.triggered.connect(web_control_panel)
+
+        menu.addSeparator()
+
         def logout():
             self.giscube.remove_tokens()
             self.setExpanded(False)
@@ -112,12 +126,6 @@ class ServerItem(QTreeWidgetItem):
         logout_action = QAction('Logout from server')
         menu.addAction(logout_action)
         logout_action.triggered.connect(logout)
-
-        def admin_webside():
-            QDesktopServices.openUrl(QUrl(self.giscube.admin_webside))
-        admin_webside_action = QAction('Open admin webside')
-        menu.addAction(admin_webside_action)
-        admin_webside_action.triggered.connect(admin_webside)
 
         def close():
             confirm_dialog = QMessageBox(
