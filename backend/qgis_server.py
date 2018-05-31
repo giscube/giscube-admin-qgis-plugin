@@ -97,8 +97,11 @@ class QgisServer:
         if not self.giscube.is_logged_in:
             raise Unauthorized()
 
-        with open(path, 'r') as f:
-            qgis_project = f.read()
+        if path is not None:
+            with open(path, 'r') as f:
+                qgis_project = f.read()
+        else:
+            qgis_project = None
 
         result = self.giscube.try_request(
             self.__push_project,
@@ -204,16 +207,18 @@ class QgisServer:
                 Api.PROJECTS,
                 str(project_id),
             )
-
-        return request(
-            url,
-            data={
+            payload = {
                 'client_id': self.giscube.client_id,
                 'access_token': self.giscube.access_token,
                 'id': project_id,
                 'name': title,
-                'data': qgis_project,
             }
+            if qgis_project is not None:
+                payload['data'] = qgis_project
+
+        return request(
+            url,
+            data=payload
         )
 
     def __delete_project(self, project_id):
