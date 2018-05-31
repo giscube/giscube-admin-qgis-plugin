@@ -101,7 +101,6 @@ class ServerItem(QTreeWidgetItem):
     def new_project_dialog(self):
         def popup():
             self.giscube_admin.new_project_popup(self.name)
-        print(self)
         main_company.list_job(ListProjectsJob(self, popup))
 
     def context_menu(self, pos):
