@@ -19,6 +19,8 @@ class QgisServer:
     Giscube's QGis Server API client.
     """
 
+    WRITE_DIR = QDir.tempPath()
+
     def __init__(self, giscube):
         """
         Constructor.
@@ -67,7 +69,7 @@ class QgisServer:
         response = self.giscube.try_request(self.__request_project, project_id)
 
         t = '{:.0f}'.format(time.time())
-        path = QDir.tempPath() + (
+        path = self.WRITE_DIR + (
             '/qgis-admin-project-'+str(project_id)+'-'+t+'.qgs'
         )
         with open(path, 'w') as f:

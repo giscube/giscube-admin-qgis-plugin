@@ -3,8 +3,12 @@
 This script contains ProjectItem.
 """
 
+from os.path import dirname, samefile
+
+from ..backend.qgis_server import QgisServer
 from ..backend.exceptions import Unauthorized
 
+from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QMessageBox,\
                             QInputDialog
 
@@ -49,6 +53,7 @@ class ProjectItem(QTreeWidgetItem):
             project.read(self.path)
             project.readProject.connect(close_project)
             project.projectSaved.connect(save_project)
+            self.clean_recent_projects()
 
         def save_project():
             self.id = self.qgis_server.upload_project(
@@ -56,6 +61,7 @@ class ProjectItem(QTreeWidgetItem):
                 self.name,
                 self.path,
             )
+            self.clean_recent_projects()
 
         def close_project():
             project = QgsProject.instance()
@@ -139,3 +145,15 @@ class ProjectItem(QTreeWidgetItem):
                     "Couldn't rename this project",
                     QgsMessageBar.ERROR
                 )
+
+    def clean_recent_projects(self):
+        qgis_settings = QSettings()
+        qgis_settings.beginGroup('UI/recentProjects')
+        for group in qgis_settings.childGroups():
+            if samefile(
+                    dirname(qgis_settings.value(group+'/path')),
+                    QgisServer.WRITE_DIR
+            ):
+                qgis_settings.remove(group)
+
+        qgis_settings.endGroup()
