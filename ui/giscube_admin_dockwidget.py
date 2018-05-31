@@ -7,6 +7,7 @@ opens with the plugin.
 import os
 
 from PyQt5 import QtWidgets, uic
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from .tree_controller import TreeController
@@ -29,6 +30,28 @@ class GiscubeAdminDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Set up the user interface from Designer.
         self.setupUi(self)
+
+        # Set icons
+        self.new_server.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            'new_server.svg'
+        )))
+        self.refresh.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            'refresh.svg'
+        )))
+        self.new_project.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            'new_project.svg'
+        )))
+        self.publish.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            'publish_project.svg'
+        )))
 
         self.servers.setContextMenuPolicy(Qt.CustomContextMenu)
 
