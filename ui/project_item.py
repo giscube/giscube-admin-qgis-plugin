@@ -3,9 +3,13 @@
 This script contains ProjectItem.
 """
 
-from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QMessageBox
+from ..backend.exceptions import Unauthorized
+
+from PyQt5.QtWidgets import QMenu, QAction, QTreeWidgetItem, QMessageBox,\
+                            QInputDialog
 
 from qgis.core import QgsProject
+from qgis.gui import QgsMessageBar
 
 from ..utils import safe_close, str2int
 
@@ -68,16 +72,29 @@ class ProjectItem(QTreeWidgetItem):
 
         def open_():
             self.open()
-        open_action = QAction('&Open project')
+        open_action = QAction('Open project')
         menu.addAction(open_action)
         open_action.triggered.connect(open_)
+
+        def rename():
+            self._rename_popup()
+        rename_action = QAction('Rename Project')
+        menu.addAction(rename_action)
+        rename_action.triggered.connect(rename)
+
+        def publish():
+            self._publish_popup()
+        publish_action = QAction('Publish project')
+        menu.addAction(publish_action)
+        publish_action.triggered.connect(publish)
+
+        menu.addSeparator()
 
         def delete():
             confirm_dialog = QMessageBox(
                 QMessageBox.Question,
                 "Confirm project delete",
-                "Do you really want to delete this project?\n"
-                "It will be removed forever",
+                "Do you really want to delete this project?",
                 QMessageBox.Yes | QMessageBox.No,
             )
             if confirm_dialog.exec_() == QMessageBox.Yes:
@@ -98,3 +115,27 @@ class ProjectItem(QTreeWidgetItem):
             )
             published['category'] = str2int(published['category'])
             self.published = published
+
+    def _rename_popup(self):
+        result = QInputDialog.getText(
+            None,
+            'Rename',
+            'Set the new name for the project '+self.name+':')
+
+        if result[1]:
+            name = result[0]
+            try:
+                result = self.qgis_server.upload_project(
+                    self.id,
+                    name,
+                    path=None
+                )
+                if result == self.id:
+                    self.name = name
+                    self.setText(0, self.name)
+            except Unauthorized:
+                self.iface.messageBar().pushMessage(
+                    "Error",
+                    "Couldn't rename this project",
+                    QgsMessageBar.ERROR
+                )
