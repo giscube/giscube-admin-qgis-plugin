@@ -27,6 +27,6 @@ class LoginDialog(QtWidgets.QDialog, FORM_CLASS):
         values_dic = {
             'username': self.username.text(),
             'password': self.password.text(),
-            'save_tokens': self.save_tokens.isChecked(),
+            'save_tokens': not self.discard_tokens.isChecked(),
         }
         return values_dic

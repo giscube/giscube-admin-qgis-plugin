@@ -11,7 +11,7 @@ from PyQt5.QtCore import QSettings, QDir, Qt, \
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
-from qgis.core import QgsProject
+from qgis.core import Qgis, QgsProject
 from qgis.gui import QgsMessageBar
 
 from .backend import Giscube
@@ -77,6 +77,12 @@ class GiscubeAdmin:
 
         self.pluginIsActive = False
         self.dockwidget = None
+
+        def load():
+            if self.settings.is_open:
+                self.open_action.trigger()
+
+        iface.initializationCompleted.connect(load)
 
     def server_names(self):
         """
@@ -179,7 +185,7 @@ class GiscubeAdmin:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         icon_path = ':/plugins/GiscubeAdmin/icon.png'
-        self.add_action(
+        self.open_action = self.add_action(
             icon_path,
             text=self.tr(u'Open Giscube Admin'),
             callback=self.run,
@@ -204,6 +210,7 @@ class GiscubeAdmin:
         # when closing the docked window:
         # self.dockwidget = None
 
+        self.settings.is_open = False
         self.pluginIsActive = False
 
     def unload(self):
@@ -217,11 +224,18 @@ class GiscubeAdmin:
         # remove the toolbar
         del self.toolbar
 
+        if self.dockwidget is not None:
+            self.dockwidget.hide()
+            self.iface.removeDockWidget(self.dockwidget)
+            del self.dockwidget
+            self.dockwidget = None
+
     def run(self):
         """Run method that loads and starts the plugin"""
 
         if not self.pluginIsActive:
             self.pluginIsActive = True
+            self.settings.is_open = True
 
             # dockwidget may not exist if:
             #    first run of plugin
@@ -234,7 +248,8 @@ class GiscubeAdmin:
 
             # show the dockwidget
             self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
-            self.dockwidget.show()
+
+        self.dockwidget.show()
 
     def make_dockwidget(self):
         """
@@ -256,23 +271,40 @@ class GiscubeAdmin:
 
     def new_server_popup(self):
         """
-from .new_project_dialog import NewProjectDialog
         Opens a new server dialog.
         """
         dialog = NewServerDialog(self.dockwidget)
         if dialog.exec_():
             result = dialog.values()
+            if result['name'] in ServerItem.saved_servers.childGroups():
+                self.iface.messageBar().pushMessage(
+                    "A server must have a unique name.",
+                    Qgis.Critical
+                )
+                return
             new_conn = Giscube(
                 result['url'],
                 self.CLIENT_ID,
                 False,
                 result['name'],
             )
-            ServerItem(
+            si = ServerItem(
                 new_conn,
                 self.dockwidget.servers,
                 self,
             )
+
+            # try logging in
+            user = result['username']
+            pw = result['password']
+            if (
+                (user is not None and user != '')
+                or
+                (pw is not None and pw != '')
+            ):
+                r = si._try_login(user, pw, result['save_tokens'])
+                if not r['finished']:
+                    si._login_popup(True)
 
     def new_project_popup(self, default_server=None):
         dialog = NewProjectDialog(self, default_server)

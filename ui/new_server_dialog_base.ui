@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>430</width>
-    <height>116</height>
+    <width>539</width>
+    <height>198</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,45 @@
      <item row="1" column="1">
       <widget class="QLineEdit" name="url"/>
      </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="username_label">
+       <property name="text">
+        <string>Username</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="password_label">
+       <property name="text">
+        <string>Password</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="username">
+       <property name="placeholderText">
+        <string>(optional)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="password">
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+       <property name="placeholderText">
+        <string>(optional)</string>
+       </property>
+      </widget>
+     </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="discard_tokens">
+     <property name="text">
+      <string>Use credentials only for this QGIS session</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -53,6 +91,9 @@
  <tabstops>
   <tabstop>name</tabstop>
   <tabstop>url</tabstop>
+  <tabstop>username</tabstop>
+  <tabstop>password</tabstop>
+  <tabstop>discard_tokens</tabstop>
  </tabstops>
  <resources/>
  <connections>

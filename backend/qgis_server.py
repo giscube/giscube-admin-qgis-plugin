@@ -19,6 +19,8 @@ class QgisServer:
     Giscube's QGis Server API client.
     """
 
+    WRITE_DIR = QDir.tempPath()
+
     def __init__(self, giscube):
         """
         Constructor.
@@ -67,7 +69,7 @@ class QgisServer:
         response = self.giscube.try_request(self.__request_project, project_id)
 
         t = '{:.0f}'.format(time.time())
-        path = QDir.tempPath() + (
+        path = self.WRITE_DIR + (
             '/qgis-admin-project-'+str(project_id)+'-'+t+'.qgs'
         )
         with open(path, 'w') as f:
@@ -97,8 +99,11 @@ class QgisServer:
         if not self.giscube.is_logged_in:
             raise Unauthorized()
 
-        with open(path, 'r') as f:
-            qgis_project = f.read()
+        if path is not None:
+            with open(path, 'r') as f:
+                qgis_project = f.read()
+        else:
+            qgis_project = None
 
         result = self.giscube.try_request(
             self.__push_project,
@@ -196,6 +201,12 @@ class QgisServer:
                 Api.PATH,
                 Api.PROJECTS,
             )
+            payload = {
+                'client_id': self.giscube.client_id,
+                'access_token': self.giscube.access_token,
+                'name': title,
+                'data': qgis_project,
+            }
         else:
             request = requests.put
             url = urljoin(
@@ -204,16 +215,17 @@ class QgisServer:
                 Api.PROJECTS,
                 str(project_id),
             )
+            payload = {
+                'client_id': self.giscube.client_id,
+                'access_token': self.giscube.access_token,
+                'name': title,
+            }
+            if qgis_project is not None:
+                payload['data'] = qgis_project
 
         return request(
             url,
-            data={
-                'client_id': self.giscube.client_id,
-                'access_token': self.giscube.access_token,
-                'id': project_id,
-                'name': title,
-                'data': qgis_project,
-            }
+            data=payload
         )
 
     def __delete_project(self, project_id):

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" width="24" version="1.1">
+  <g
+     transform="matrix(3.779562,0,0,3.779562,0.00136512,-0.00516141)">
+    <path
+       d="m 0.265,1.058 h 5.82 V 5.29 c -2.152,0.91 -3.968,0.795 -5.82,0 z"
+       id="path2"
+       inkscape:connector-curvature="0"
+       style="fill:#6d97c4" />
+    <path
+       d="M 0.265,1.058 V 5.29 l 0.53,0.266 V 1.058 Z"
+       style="color:#000000;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;text-orientation:mixed;white-space:normal;shape-padding:0;overflow:visible;isolation:auto;mix-blend-mode:normal;solid-color:#000000;fill:#bacee3"
+       overflow="visible"
+       id="path4"
+       inkscape:connector-curvature="0" />
+    <path
+       d="M 6.085,1.058 V 5.29 L 5.027,5.688 v -4.63 z"
+       style="color:#000000;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;text-orientation:mixed;white-space:normal;shape-padding:0;overflow:visible;isolation:auto;mix-blend-mode:normal;solid-color:#000000;fill:#55769a"
+       overflow="visible"
+       id="path6"
+       inkscape:connector-curvature="0" />
+    <path
+       d="M 6.085,1.058 H 6.35 V 5.0351297 H 6.085 Z M 0,1.058 H 0.265 V 5.0351297 H 0 Z"
+       id="path8"
+       inkscape:connector-curvature="0"
+       style="fill:#415a75;stroke-width:1.00089753" />
+    <path
+       style="color:#000000;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;text-orientation:mixed;white-space:normal;shape-padding:0;overflow:visible;isolation:auto;mix-blend-mode:normal;solid-color:#000000;fill:#415a75"
+       d="m 0.265,3.704 v 0.45 C 0.5,4.304 0.76,4.43 0.979,4.497 1.546,4.67 2.323,4.762 3.174,4.762 4.024,4.762 4.722,4.67 5.291,4.497 5.549,4.407 5.883,4.293 6.084,4.153 v -0.45 c 0,0.07 -0.05,0.17 -0.185,0.265 C 5.764,4.066 5.554,4.152 5.289,4.233 4.755,4.395 4.003,4.497 3.174,4.497 2.344,4.497 1.59,4.395 1.057,4.233 0.791,4.153 0.557,4.066 0.422,3.968 0.287,3.871 0.264,3.773 0.264,3.704 Z m 0,-1.324 v 0.45 c 0.23,0.16 0.495,0.277 0.714,0.344 0.567,0.173 1.344,0.265 2.195,0.265 0.85,0 1.627,-0.093 2.196,-0.266 0.262,-0.09 0.515,-0.197 0.715,-0.344 v -0.45 c 0,0.07 -0.05,0.17 -0.185,0.265 C 5.765,2.742 5.558,2.828 5.292,2.909 4.759,3.071 4.004,3.173 3.175,3.173 2.345,3.173 1.591,3.071 1.058,2.909 0.792,2.829 0.585,2.742 0.45,2.644 0.315,2.548 0.265,2.45 0.265,2.38 Z"
+       overflow="visible"
+       id="path10"
+       inkscape:connector-curvature="0" />
+    <ellipse
+       cx="3.175"
+       cy="1.058"
+       rx="3.043"
+       ry="0.926"
+       id="ellipse12"
+       style="fill:#bacee3;stroke:#415a75;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:round" />
+    <path
+       style="color:#000000;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;text-orientation:mixed;white-space:normal;shape-padding:0;overflow:visible;isolation:auto;mix-blend-mode:normal;solid-color:#000000;fill:#415a75"
+       d="m 0,5.026 c 0,0.187 0.092,0.353 0.265,0.477 0.172,0.124 0.43,0.23 0.714,0.317 0.567,0.173 1.344,0.265 2.195,0.265 0.85,0 1.6,-0.092 2.17,-0.265 0.284,-0.086 0.54,-0.193 0.714,-0.317 0.17,-0.124 0.29,-0.29 0.29,-0.476 H 6.084 c 0,0 -0.04,0.164 -0.186,0.264 C 5.763,5.391 5.556,5.476 5.29,5.557 4.757,5.719 4.002,5.821 3.173,5.821 2.343,5.821 1.589,5.719 1.056,5.557 0.792,5.476 0.585,5.39 0.45,5.29 0.314,5.194 0.266,5.096 0.266,5.027 Z"
+       overflow="visible"
+       id="path14"
+       inkscape:connector-curvature="0" />
+  </g>
+  <g transform="translate(33)">
+      <rect y="13" x="-20" width="11" rx="2.011" height="11" fill="#c4a000"/>
+      <path d="M-15 14v2.063a2.501 2.501 0 0 0-1.375.78l-1.781-1.03-.5.874 1.781 1.032A2.46 2.46 0 0 0-17 18.5c0 .275.043.534.125.781l-1.781 1.032.5.875 1.781-1.032c.353.4.833.67 1.375.782V23h1v-2.063a2.501 2.501 0 0 0 1.375-.78l1.781 1.03.5-.875-1.781-1.03A2.46 2.46 0 0 0-12 18.5a2.46 2.46 0 0 0-.125-.781l1.781-1.032-.5-.875-1.781 1.032c-.353-.4-.833-.67-1.375-.782V14zm.5 3.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" fill="#fcffff"/><path d="M-19 19l9-.01v-2C-10 14-11 14-14.5 14s-4.5 0-4.5 3v2z" opacity=".3" fill="#fcffff" fill-rule="evenodd"/>
+  </g>
+</svg>

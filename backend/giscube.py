@@ -207,6 +207,14 @@ class Giscube:
 
         return True
 
+    def remove_tokens(self):
+        """
+        Remove the tokens from memory and storage.
+        """
+        self.__access_token = None
+        self.__refresh_token = None
+        self.delete_saved()
+
     def delete_saved(self):
         """
         Deletes the locally saved tokens (if they are).
