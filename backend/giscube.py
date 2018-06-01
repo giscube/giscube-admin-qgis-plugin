@@ -147,6 +147,11 @@ class Giscube:
         :raises requests.exceptions.HTTPError: when the server responses with
         an unexpected error status code
         """
+        if (
+            (not isinstance(user, str) or user == '')
+            or (not isinstance(password, str) or password == '')
+        ):
+            return False
 
         response = requests.post(
             urljoin(self._server_url, OAuth.PATH),

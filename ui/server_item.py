@@ -99,7 +99,9 @@ class ServerItem(QTreeWidgetItem):
         main_company.list_job(ListProjectsJob(self))
 
     def new_project_dialog(self):
-        self.giscube_admin.new_project_popup(self.name)
+        def popup():
+            self.giscube_admin.new_project_popup(self.name)
+        main_company.list_job(ListProjectsJob(self, popup))
 
     def context_menu(self, pos):
         menu = QMenu()
@@ -187,12 +189,13 @@ class ListProjectsJob(Job):
     """
     Lists the projects of a ServerItem asynchronously.
     """
-    def __init__(self, si):
+    def __init__(self, si, callback=None):
         """
         Contructor.
         """
         super().__init__()
         self.si = si
+        self.callback = callback
         self.projects = None
         self.services = None
         self.succeded = False
@@ -220,6 +223,8 @@ class ListProjectsJob(Job):
                     service = None
 
                 ProjectItem(pid, name, self.si, service)
+            if self.callback is not None:
+                self.callback()
         elif self.si._login_popup():
             main_company.list_job(self)
 
@@ -233,10 +238,10 @@ class ListProjectsJob(Job):
             # The saved credential expired. Remove them and start the loging
             #   and querying again.
             self.si.giscube.delete_saved()
-            self.si._expanded()
+            self.si._login_popup()
         except RequestException as e:
             self.iface.messageBar().pushMessage(
                 "Error",
-                "No s'ha pogut connectar al servidor",
+                "Couldn't connect to the server",
                 QgsMessageBar.ERROR
             )

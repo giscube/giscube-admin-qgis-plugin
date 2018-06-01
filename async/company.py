@@ -72,7 +72,6 @@ class Company:
         self._mutex.lock()
         if len(self._jobs) > 0:
             job = self._jobs.pop()
-            self._mutex.unlock()
         else:
             job = None
 
@@ -83,11 +82,11 @@ class Company:
             for i, s in enumerate(self._slaves):
                 if s is slave:
                     self._slaves.pop(i)
-                    self._mutex.unlock()
 
                     self._free_mutex.lock()
                     self._free_slaves.append(slave)
                     self._free_mutex.unlock()
+        self._mutex.unlock()
 
         return job
 
@@ -108,6 +107,7 @@ class Company:
         self._free_mutex.unlock()
 
     def __add(self, job):
+        # Call with self._mutex locked
         l = len(self._jobs)
         i = 0
         while i < l and self._jobs[i].priority < job.priority:
