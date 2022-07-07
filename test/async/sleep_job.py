@@ -5,7 +5,7 @@ This script contains a Job class for testing the async package.
 
 import time
 
-from async import Job
+from asyncjob import Job
 
 
 class SleepJob(Job):

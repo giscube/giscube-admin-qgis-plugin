@@ -16,7 +16,7 @@ from ..settings import Settings
 
 from ..backend import Unauthorized
 
-from ..async import Job
+from ..asyncjob import Job
 from ..main_company import main_company
 
 from .loading_item import LoadingItem

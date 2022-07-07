@@ -6,7 +6,7 @@ This script tests the async package.
 import time
 from unittest import TestCase
 
-from async import Company
+from asyncjob import Company
 from .append_job import AppendJob
 from .sleep_job import SleepJob
 
