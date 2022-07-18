@@ -270,6 +270,53 @@ class GiscubeAdmin:
             ServerItem(conn, self.servers, self)
 
     def new_server_popup(self):
+
+        import requests
+        import json
+        from PyQt5.QtWidgets import QTreeWidgetItem
+
+
+        r = requests.get( 'https://mapes.salt.cat/apps/giscube-admin/geoportal/category/catalog/' )
+        data = r.json()
+
+
+        all_nodes = {}
+        tree = []
+
+
+        for row in data:
+           row['children'] = []
+           all_nodes[row.get('id')] = row
+
+
+           if row.get('parent') is None:
+               row ['widget'] = (QTreeWidgetItem(None, [row.get('name')]))
+               tree.append(row)
+
+           else:
+               parent = all_nodes[row.get('parent')]
+
+               print(type(row))
+
+               parent_widget = parent.get('widget')
+               row['widget'] = (QTreeWidgetItem(parent_widget, [row.get('name')]))
+
+               parent.get('children').append(row)
+
+
+
+
+        treeWidget = self.servers
+        treeWidget.setColumnCount(1)
+        items = []
+        for row in tree:
+            #recuperar widget creat
+            items.append(row['widget'])
+        treeWidget.insertTopLevelItems(0, items)
+
+
+
+    def new_server_popup_original(self):
         """
         Opens a new server dialog.
         """
