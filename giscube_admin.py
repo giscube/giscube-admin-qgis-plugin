@@ -284,6 +284,55 @@ class GiscubeAdmin:
         tree = []
 
 
+
+        def add_wms_layer():
+            #carregar un WMS:
+            from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
+
+            url = 'https://mapes.salt.cat/apps/giscube-admin/qgisserver/services/sectors_industrials'
+            rlayer = QgsRasterLayer(f'url={url}?&format=image/png&crs=EPSG:3857', 'title', 'wms')
+            print('ok', rlayer)
+
+            if rlayer.isValid() or True:
+                print('**')
+                QgsProject.instance().addMapLayer(rlayer)
+
+
+        def onItemClicked(it, col):
+            print(it.text(col))
+            data = it.data(2, QtCore.Qt.EditRole)
+
+            print(data)
+            add_wms_layer()
+
+
+
+
+        def processar_children(content_row):
+            if content_row.get('children') is not None:
+
+                parent_widget = content_row.get('widget')
+                content_row['widget'] = QTreeWidgetItem(parent_widget, [content_row.get('description')])
+
+
+
+        def processar_content(row):
+            if row.get('content') is not None:
+                content = row.get('content')
+
+                for content_row in content:
+                    parent_widget = row.get('widget')
+
+                    content_row['widget'] = QTreeWidgetItem(parent_widget, [content_row.get('title')])
+                    content_row['widget'].setData(2, QtCore.Qt.EditRole, content_row) # 2 data
+
+                    data = content_row['widget'].data(2, QtCore.Qt.EditRole)
+
+                    print(data)
+
+
+                    processar_children(content_row)
+
         for row in data:
            row['children'] = []
            all_nodes[row.get('id')] = row
@@ -291,18 +340,18 @@ class GiscubeAdmin:
 
            if row.get('parent') is None:
                row ['widget'] = (QTreeWidgetItem(None, [row.get('name')]))
+               processar_content(row)
                tree.append(row)
 
            else:
                parent = all_nodes[row.get('parent')]
 
-               print(type(row))
-
                parent_widget = parent.get('widget')
                row['widget'] = (QTreeWidgetItem(parent_widget, [row.get('name')]))
 
-               parent.get('children').append(row)
 
+               processar_content(row)
+               parent.get('children').append(row)
 
 
 
@@ -312,7 +361,16 @@ class GiscubeAdmin:
         for row in tree:
             #recuperar widget creat
             items.append(row['widget'])
+
+
+        treeWidget.clear()
         treeWidget.insertTopLevelItems(0, items)
+
+
+        treeWidget.itemClicked.connect(onItemClicked)
+
+
+
 
 
 
