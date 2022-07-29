@@ -269,48 +269,328 @@ class GiscubeAdmin:
             )
             ServerItem(conn, self.servers, self)
 
+
+
     def new_server_popup(self):
+        #ha d'apareixer la cerca, no l'arbre que ja tenim
 
         import requests
         import json
         from PyQt5.QtWidgets import QTreeWidgetItem
+        from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer, QgsCoordinateReferenceSystem, QgsCoordinateTransform
+        from qgis.core import QgsField, QgsPoint, QgsPointXY, QgsFeature, QgsGeometry
+        from qgis.PyQt.QtCore import QVariant
+        import qgis.utils
+        from qgis.utils import iface
 
 
-        r = requests.get( 'https://mapes.salt.cat/apps/giscube-admin/geoportal/category/catalog/' )
+        ##CERCA
+
+        #url de la cerca
+        #s = requests.get('https://mapes.salt.cat/apps/cercador/cercar/?q=industrials')
+
+        url = 'https://mapes.salt.cat/apps/cercador/cercar/?q=industrials'
+        #url = 'https://mapes.salt.cat/apps/giscube-admin/geoportal/search/?q=Ortofoto+Salt+2013'
+
+        s = requests.get(url)
+        search = s.json() #diccionari
+
+        count = search.get('count')
+        results = search.get('results') #llista amb diccionaris dins ¿?
+
+
+        items = []
+        list = [] #sera una llista de diccionaris
+
+
+        #definim el tipus
+        if count is not None:
+            type = 'GeoJSON'
+            nom = 'cerca: ' + url[47:]
+
+        else:
+            type = 'TMS'
+            child = results[0].get('children')
+            url = child[0].get('url')
+            title = results[0].get('title')
+
+
+
+        #carreguem el TMS layer
+        def __loadLayerTMS(url, title):
+            # create QGIS raster layer & add to map
+            urlWithParams = 'type=xyz&url=' + str(url)
+            urlWithParams += '&zmax=22&zmin=0'
+
+            rlayer = QgsRasterLayer(urlWithParams, title, 'wms')
+            print(rlayer.isValid())
+
+            if rlayer.isValid():
+                QgsProject.instance().addMapLayer(rlayer)
+
+
+
+        def create_items(list, results):
+            #crear l'item per afegir a l'arbre
+            for item in results: # item és cada diccionari dins la llista
+                g = item.get('geojson')
+                #print(type(g))
+                geo = g.get('geometry')
+                #print(geo)
+
+                coord = geo.get('coordinates')
+
+                x = coord[0]
+                #print('x:', x)
+                y = coord[1]
+
+                name = [item.get('title') + str(',  ') + item.get('address')]
+
+                #cada item ha de ser un WidgetItem per posar a l'arbre
+                item['widget'] = QTreeWidgetItem(None, name)
+                item['widget'].setData(2, QtCore.Qt.EditRole, item) # 2 data
+
+                items.append(item['widget']) #llista de diccionaris
+
+                address = item.get('address')
+                title = item.get('title')
+                print(title)
+
+                layer = {
+                    'x': x,
+                    'y': y,
+                    'address': address,
+                    'title': title
+                }
+
+                list.append(layer)
+
+
+
+        def create_layer(list, nom):
+            #creem el layer
+            vl = QgsVectorLayer("Point", nom , "memory")
+            QgsProject.instance().addMapLayer(vl)
+
+
+            #afegir els atributs al layer
+            for i in list:
+            #passar cada adreça, cada titol i cada parell de coordenades
+                address = i['address']
+                title = i['title']
+                x = i['x']
+                y = i['y']
+
+                print('dades:', address, title, x, y)
+
+                #print(address, '', title)
+                pr = vl.dataProvider()
+                pr.addAttributes([QgsField("address", QVariant.String),
+                                  QgsField("title", QVariant.String)])
+                vl.updateFields()
+
+                f = QgsFeature()
+                f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(x, y)))
+                f.setAttributes([address, title])
+                pr.addFeature(f)
+                vl.updateExtents()
+
+
+
+        #zoom quan fem click
+        def setCenter(x, y, zoom):
+            #center
+            center_point_in = QgsPointXY(x, y)
+            # convert coordinates
+            crsSrc = QgsCoordinateReferenceSystem(4326)  # WGS84
+            crsDest = QgsCoordinateReferenceSystem(QgsProject.instance().crs())
+            xform = QgsCoordinateTransform(crsSrc, crsDest, QgsProject.instance())
+            # forward transformation: src -> dest
+            center_point = xform.transform(center_point_in)
+            iface.mapCanvas().setCenter(center_point)
+
+            # zoom
+            if zoom is not None:
+                # transform the zoom level to scale
+                scale_value = 591657550.5 / 2 ** (zoom - -10)
+                iface.mapCanvas().zoomScale(scale_value)
+
+
+
+        def onItemClicked(it, col): #quan fem click
+            data = it.data(2, QtCore.Qt.EditRole)
+
+            geojson = data.get('geojson')
+            coord = geojson.get('geometry').get('coordinates')
+
+            x = coord[0]
+            y = coord[1]
+
+            zoom = None
+            setCenter(x, y, zoom)
+
+
+
+        def create_tree():
+            #construir l'arbre
+            treeWidget = self.servers
+            treeWidget.setColumnCount(1)
+
+            treeWidget.clear()
+            treeWidget.insertTopLevelItems(0, items)
+            treeWidget.itemClicked.connect(onItemClicked)
+
+
+
+        #afegir el layer de json amb les coordenades
+        def __loadLayerGeoJSON(self, list):
+
+            create_items(list, results)
+            create_layer(list, nom)
+            create_tree()
+
+
+
+        if type is 'TMS':
+            print('done')
+            __loadLayerTMS(url, title) #la url ha de ser la del children
+        elif type is 'GeoJSON':
+            __loadLayerGeoJSON(self, list)
+
+
+        '''
+        #########
+        CATÀLEG
+        #########
+
+        '''
+
+        #url del catàleg
+        r = requests.get('https://mapes.salt.cat/apps/giscube-admin/geoportal/category/catalog/')
         data = r.json()
-
 
         all_nodes = {}
         tree = []
 
 
 
-        def add_wms_layer():
-            #carregar un WMS:
-            from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
+        def __loadLayerTMS(self, layer, url):
+            #agafem la url
+            urlWithParams = 'type=xyz&url=' + str(url)
+            urlWithParams += '&zmax=22&zmin=0'
 
-            url = 'https://mapes.salt.cat/apps/giscube-admin/qgisserver/services/sectors_industrials'
-            rlayer = QgsRasterLayer(f'url={url}?&format=image/png&crs=EPSG:3857', 'title', 'wms')
-            print('ok', rlayer)
+            print(urlWithParams)
 
-            if rlayer.isValid() or True:
-                print('**')
+            # create QGIS raster layer & add to map
+            rlayer = QgsRasterLayer(urlWithParams, layer['title'], 'wms')
+            print(rlayer.isValid())
+
+            if rlayer.isValid():
+                QgsProject.instance().addMapLayer(rlayer)
+
+        '''
+        # ***FALTA***
+        '''
+
+        def __loadLayerWMS(self, layer, url): #FALTA
+
+            print('h')
+            #agafem la url
+
+            #wms_url = 'crs=EPSG:3857&type=xyz&zmin=0&zmax=19&url=' + str(url)
+
+            # *** {a|b|c} + str(url) ***
+
+            wms_url = "type=xyz&url=" + str(url)
+            """
+            wms_url = 'url=' + str(url)
+            wms_url += 'jpeg&crs=EPSG:4326'
+
+            """
+
+
+            '''
+            urlWithParams_wms = 'type=xyz&url=' + str(url)
+            urlWithParams_wms += '&zmax=22&zmin=0'
+
+            '''
+
+            #'@EPSG:900913@jpg/{z}/{x}/{y}.jpg'
+
+            # create QGIS raster layer & add to map
+            rlayer = QgsRasterLayer(wms_url, layer['title'], 'wms')
+            print(rlayer.isValid())
+
+            if rlayer.isValid():
                 QgsProject.instance().addMapLayer(rlayer)
 
 
-        def onItemClicked(it, col):
-            print(it.text(col))
-            data = it.data(2, QtCore.Qt.EditRole)
 
-            print(data)
-            add_wms_layer()
+        def __loadLayerGeoJSON(self, layer, url):
+            print('...')
+            #url
+            json_url = str(url) + "?access_token="
+            print('url:', json_url)
 
+            # create layer
+            vlayer = QgsVectorLayer(json_url, layer['title'],"ogr")
+            print(vlayer.isValid())
+
+            # define projection
+            crs = vlayer.crs()
+            crs.createFromId(long(layer["children"][0]["projection"]))
+            vlayer.setCrs(crs)
+
+            # load to QGIS
+            if vlayer.isValid():
+                print('valid')
+                QgsProject.instance().addMapLayer(vlayer)
+
+
+
+        def add_layer_type(type, data, url): #afegir la capa en funció del tipus
+            if type == 'WMS':
+                print('----')
+                __loadLayerWMS(self, data, url)
+
+            elif type == 'TMS':
+                __loadLayerTMS(self, data, url)
+
+            elif type == 'GeoJSON':
+                __loadLayerGeoJSON(self, data, url)
+
+
+
+
+        def layer_type(dict_children, data, url): #obtenim el type de les dades
+            type = dict_children['type']
+            print('tipus:', type)
+
+            add_layer_type(type, data, url)  #afegir la capa en funció del tipus
+
+
+
+
+        def add_wms_layer(data): #afegir el layer
+            #obtenim la url necessaria
+            child = data['children']
+            dict_children = child[0]
+            url = dict_children['url']
+
+            layer_type(dict_children, data, url) #cridem funció que dirà el type i farà una cosa o una altra
+
+
+
+
+        def onItemClicked(it, col): #quan fem click
+            data = it.data(2, QtCore.Qt.EditRole) #accedim a les dades de 'it'
+
+            add_wms_layer(data) #afegir el layer
 
 
 
         def processar_children(content_row):
             if content_row.get('children') is not None:
-
                 parent_widget = content_row.get('widget')
                 content_row['widget'] = QTreeWidgetItem(parent_widget, [content_row.get('description')])
 
@@ -321,18 +601,32 @@ class GiscubeAdmin:
                 content = row.get('content')
 
                 for content_row in content:
+                    #print("***", content_row)
                     parent_widget = row.get('widget')
 
+                    #print("parent widget:", parent_widget)
+                    #print("titol:", content_row.get('title'))
                     content_row['widget'] = QTreeWidgetItem(parent_widget, [content_row.get('title')])
+
+                    #layerNode = QTreeWidgetItem(currentNode, ['Name'])
+                    #layerNode.setData(0, QtCore.Qt.EditRole, layer['title']) # 0 Text
+                    #layerNode.setData(1, QtCore.Qt.EditRole, id) # 1 id
                     content_row['widget'].setData(2, QtCore.Qt.EditRole, content_row) # 2 data
 
+                    #prova
                     data = content_row['widget'].data(2, QtCore.Qt.EditRole)
 
-                    print(data)
+                    """
+                    children = data['children']
+                    dict_children = children[0]
+                    print(dict_children['url'])
 
+                    """
 
                     processar_children(content_row)
 
+
+        #arbre
         for row in data:
            row['children'] = []
            all_nodes[row.get('id')] = row
@@ -344,17 +638,16 @@ class GiscubeAdmin:
                tree.append(row)
 
            else:
+               #print("...", row.get('name'))
                parent = all_nodes[row.get('parent')]
 
                parent_widget = parent.get('widget')
                row['widget'] = (QTreeWidgetItem(parent_widget, [row.get('name')]))
 
-
                processar_content(row)
                parent.get('children').append(row)
 
-
-
+        """
         treeWidget = self.servers
         treeWidget.setColumnCount(1)
         items = []
@@ -362,12 +655,12 @@ class GiscubeAdmin:
             #recuperar widget creat
             items.append(row['widget'])
 
-
         treeWidget.clear()
         treeWidget.insertTopLevelItems(0, items)
 
-
         treeWidget.itemClicked.connect(onItemClicked)
+
+        """
 
 
 
